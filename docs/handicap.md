@@ -21,9 +21,8 @@ Also etwa so
 ## Stableford Punkte (SFP)
 
 Grundsätzlich werden Stableford-Punkte nach folgendem Prinzip verteilt.  
-Hat der Spieler bei einem Loch Par + 2 Schläger oder noch mehr gebraucht, so erhält er 0 Stableford Punkte.  
+Hat der Spieler bei einem Loch Par + 2 Schläge oder noch mehr gebraucht, so erhält er 0 Stableford Punkte.  
 Bei Par +1 bekommt er 1, bei Par 2, bei Par -1 3, usw..
-Dies entspricht dem Brutto-Ergebnis nach Stableford--Wertung.
 
 Zusätzlich kann auch ein Netto-Ergebnis berechnet werden. Hierfür wird einfach das Par um die Anzahl der Vorgabeschläge erhöht.
 Dies entspricht dann dem persönlichen Par. Auch hier gilt wieder >= pPar +2 = 0 Punkte, pPar +1 = 1, pPar = 2, etc..
@@ -40,7 +39,7 @@ Die Verschlechterung ist immer pauschal 0,1 Punkte.
 
 Die genauen Klassen findet ihr unter https://de.wikipedia.org/wiki/Handicap_(Golf)#Berechnungsmethode_im_alten_EGA-Vorgabensystem
 
-Ablauf für die Berechnung ist heir also:  
+Ablauf für die Berechnung ist hier also:  
 Course Handicap -> Loch-Handicap -> Netto(?)-SFP pro Loch -> SFP zusammenzählen -> in Tabelle schauen und Handicap anpassen.
 
 Für 9-Loch Runden werden für die nicht gespielten 9 Löcher pauschal 18 SFP addiert. Allerdings werden 9-Loch Runden nur für die Klassen 2-6 gewertet.
@@ -65,6 +64,7 @@ Da ich aber nicht weiß, wie das umgesetzt werden sollte und ich es auch nur ein
 ### Gewertetes Bruttoergebnis
 #### Zählspiel begrenzt durch Netto-Doppelbogey
 Im Zählspiel wird pro Loch maximal der Netto-Doppelbogey, also pPar + 2 gewertet, also
+
 $$ \text{Score} = \min(\text{Schläge}, \text{Par} + \text{Vorgabe} + 2)$$
 
 Das gewertete Bruttoergebnis ist die Summe aller Scores für die ganze Runde.
