@@ -9,6 +9,7 @@ Hier ein Vorschlag wie die Datenbank-Struktur zusammengesetzt aussehen könnte
                 "game_id": 1,
                 "course_name": "Pleb Golf Club Course",
                 "date": "2025/04/01",
+                "hcp_index": 42,
                 "course_rating": 70.9,
                 "slope_rating": 115,
                 "holes": [
@@ -50,6 +51,7 @@ Spiel-Daten:
         "game_id": 1,
         "course_name": "Pleb Golf Club Course",
         "date": "2025/04/01",
+        "hcp_index": 42,
         "course_rating": 70.9,
         "slope_rating": 115,
         "holes": [
