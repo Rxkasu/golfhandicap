@@ -47,7 +47,7 @@ Spieler-Daten:
 Spiel-Daten:
 
     {
-        "gameid": 1,
+        "game_id": 1,
         "course_name": "Pleb Golf Club Course",
         "date": "2025/04/01",
         "course_rating": 70.9,
@@ -110,6 +110,7 @@ Spiel-Daten:
         ]
     }
 
-Alles andere sollte sich daraus berechnen lassen.
+Alles andere sollte sich daraus berechnen lassen.  
+Man könnte das noch in eine dritte Tabelle für die Löcher aufsplitten, dann müsste man aber den Objekten die game_id mitgeben da hole_id nicht unique ist.
 
 Zusätzlich könnte man eine Tabelle über Golfkurse führen, auf denen man spielen kann, wenn gewünscht. Schema wäre fast identisch.
