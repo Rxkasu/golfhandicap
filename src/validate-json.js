@@ -1,6 +1,6 @@
 
 
-function validateJson(json) {
+export function validateJson(json) {
 
     const Ajv = require('ajv');
     const ajv = new Ajv({allErrors: true});
@@ -21,7 +21,3 @@ function validateJson(json) {
 
     return true;
 }
-
-const data = require('../tests/data/test-data.json')
-
-validateJson(data);

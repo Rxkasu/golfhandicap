@@ -88,6 +88,7 @@
               }
             }
           },
+          "additionalProperties": false,
           "required": [
             "game_id",
             "course_name",
@@ -158,6 +159,7 @@
                     "minimum": 1
                   }
                 },
+                "additionalProperties": false,
                 "required": [
                   "hole_id",
                   "par",
@@ -167,6 +169,7 @@
               }
             }
           },
+          "additionalProperties": false,
           "required": [
             "game_id",
             "course_name",
@@ -181,6 +184,7 @@
       }
     }
   },
+  "additionalProperties": false,
   "required": [
     "user_id",
     "surname",
