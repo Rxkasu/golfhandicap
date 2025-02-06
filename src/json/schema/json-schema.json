@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "surname": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "first_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "games": {
+      "type": "array",
+      "items": {
+        "oneOf": [ {
+          "type": "object",
+          "properties": {
+            "game_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "course_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "date": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 10,
+              "pattern": "^(19|20)\\d{2}\/(0[1-9]|1[0,1,2])\/(0[1-9]|[12][0-9]|3[01])$"
+            },
+            "hcp_index": {
+              "type": "number",
+              "minimum": -54,
+              "maximum": 54
+            },
+            "course_rating": {
+              "type": "number",
+              "minimum": 30,
+              "maximum": 90
+            },
+            "slope_rating": {
+              "type": "integer",
+              "minimum": 55,
+              "maximum": 155
+            },
+            "holes": {
+              "type": "array",
+              "minItems": 9,
+              "maxItems": 9,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "hole_id": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18
+                  },
+                  "par": {
+                    "type": "integer",
+                    "minimum": 2,
+                    "maximum": 6
+                  },
+                  "hcp": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18
+                  },
+                  "hits": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "hole_id",
+                  "par",
+                  "hcp",
+                  "hits"
+                ]
+              }
+            }
+          },
+          "required": [
+            "game_id",
+            "course_name",
+            "date",
+            "hcp_index",
+            "course_rating",
+            "slope_rating",
+            "holes"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "game_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "course_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "date": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 10,
+              "pattern": "^(19|20)\\d{2}\/(0[1-9]|1[0,1,2])\/(0[1-9]|[12][0-9]|3[01])$"
+            },
+            "hcp_index": {
+              "type": "number",
+              "minimum": -54,
+              "maximum": 54
+            },
+            "course_rating": {
+              "type": "number",
+              "minimum": 30,
+              "maximum": 90
+            },
+            "slope_rating": {
+              "type": "integer",
+              "minimum": 55,
+              "maximum": 155
+            },
+            "holes": {
+              "type": "array",
+              "minItems": 18,
+              "maxItems": 18,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "hole_id": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18
+                  },
+                  "par": {
+                    "type": "integer",
+                    "minimum": 2,
+                    "maximum": 6
+                  },
+                  "hcp": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18
+                  },
+                  "hits": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "hole_id",
+                  "par",
+                  "hcp",
+                  "hits"
+                ]
+              }
+            }
+          },
+          "required": [
+            "game_id",
+            "course_name",
+            "date",
+            "hcp_index",
+            "course_rating",
+            "slope_rating",
+            "holes"
+          ]
+        }
+      ]
+      }
+    }
+  },
+  "required": [
+    "user_id",
+    "surname",
+    "first_name",
+    "games"
+  ]
+}
+  
+  
+  
+  
+  
+  
