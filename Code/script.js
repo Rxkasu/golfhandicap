@@ -2,12 +2,7 @@
 function create_json(){
     //if (localStorage.getItem("data") == null){
 
-        json_data= {"game_id": '', "course_name": '', "date": get_date(), "hcp_index": 0, "course_rating": '', "slope_rating": '', "games": [ {"gameid": ''}, {"holes": [ {"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
-        {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
-        {"hole_id": 7, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 8, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 9, "par": 0, "hcp": 0, "hits":0},
-        {"hole_id": 10, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 11, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 12, "par": 0, "hcp": 0, "hits":0},
-        {"hole_id": 13, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 14, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 15, "par": 0, "hcp": 0, "hits":0},
-        {"hole_id": 16, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 17, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 18, "par": 0, "hcp": 0, "hits":0}]}]}
+        json_data= {"user_id": '', "sur_name": '', "first_name": '', "games": []}
         localStorage.setItem("data", JSON.stringify(json_data))
     //}
     //else {
@@ -66,6 +61,14 @@ function close_con(button){
     container.style.display= 'none'
 }
 function save_inputs(){
+    create_json()
+    game_data = {"game_id": '',"course_name": '', "date": get_date(), "hcp_index": 0, "course_rating": '', "slope_rating": '',
+            "holes": [{"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
+            {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
+            {"hole_id": 7, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 8, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 9, "par": 0, "hcp": 0, "hits":0},
+            {"hole_id": 10, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 11, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 12, "par": 0, "hcp": 0, "hits":0},
+            {"hole_id": 13, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 14, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 15, "par": 0, "hcp": 0, "hits":0},
+            {"hole_id": 16, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 17, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 18, "par": 0, "hcp": 0, "hits":0}]}
     let json_data = JSON.parse(localStorage.getItem("data"));
     for (let i = 1; i <= 18; i++) {
         let par = document.getElementById(`par${i}`).value || 0;
@@ -73,12 +76,13 @@ function save_inputs(){
         let hits = document.getElementById(`hits${i}`).value || 0;
 
         // Setze die Werte im JSON-Objekt
-        json_data.games.holes[i - 1].par = par ? parseInt(par) : 0;
-        json_data.games.holes[i - 1].hcp = hcp ? parseInt(hcp) : 0;
-        json_data.games.holes[i - 1].hits = hits ? parseInt(hits) : 0;
+        game_data.holes[i - 1].par = par ? parseInt(par) : 0;
+        game_data.holes[i - 1].hcp = hcp ? parseInt(hcp) : 0;
+        game_data.holes[i - 1].hits = hits ? parseInt(hits) : 0;
     }
+    json_data.games = json_data.games.concat(game_data)
     console.log(JSON.stringify(json_data));
-    localStorage.setItem("holedata", JSON.stringify(json_data))
+    //localStorage.setItem("holedata", JSON.stringify(json_data))
 }
 
 function new_course(){
