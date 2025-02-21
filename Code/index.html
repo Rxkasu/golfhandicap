@@ -27,8 +27,16 @@
     </style>
 </head>
 <body>
-    <input type="button" id="new_course" value="Neuer Kurs" onclick="new_course()">
-    <input type="button" id="generate_fields" value="Neues 18-loch" onclick="generateFields()">
+    <div id="buttonsContainer" style="display: flex">
+        <div style="width: 50%">
+            <input type="button" id="new_course" value="Neuer Kurs" onclick="new_course()">
+            <input type="button" id="generate_fields" value="Neues 18-loch" onclick="generateFields()">
+        </div>
+        <div style="width: 50%; text-align: right">
+            <button onclick="window.print()">Drucken</button>
+            <button onclick="sendMail()">E-Mail senden (test)</button>
+        </div>
+    </div>
     <div id="container">
         <input type="field" id="slope" placeholder="slope rating">
         <input type="field" name="course_rating" id="course_rating" placeholder="course_rating">

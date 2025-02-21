@@ -90,3 +90,12 @@ function new_course(){
     container.style.display = "block"
     
 }
+
+function sendMail() {
+    let name = "Max Mustermann";
+    let nachricht = "Hallo " + name + ",\ndein Golf-Handicap wurde aktualisiert und ist nun XX.\nMit freundichen Grüßen dein Gold-HCC Team";
+    let mailtoLink = "mailto:empfaenger@example.com"
+        + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
+        + "&body=" + encodeURIComponent(nachricht);
+    window.location.href = mailtoLink;
+}
