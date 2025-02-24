@@ -1,0 +1,36 @@
+#container {
+    margin-top: 20px;
+    width: 300px;
+    border: 3px solid black;
+    padding: 40px;
+    display: none
+}
+#container2 {
+    margin-top: 20px;
+    width: 600px;
+    border: 3px solid black;
+    padding: 40px;
+    display: none
+}
+#login {
+    margin-top: 20px;
+    width: 600px;
+    border: 3px solid black;
+    padding: 40px;
+    display: none
+}
+#register {
+    margin-top: 20px;
+    width: 600px;
+    border: 3px solid black;
+    padding: 40px;
+    display: none
+}
+input{
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+#logreg{
+    width: 50%; 
+    text-align: right;
+}

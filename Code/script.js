@@ -20,6 +20,59 @@ function get_date(){
     return date
 }
 
+function login(){
+    let container = document.getElementById("login")
+    container.style.display = "block"
+}
+function register(){
+    let container = document.getElementById("register")
+    container.style.display = "block"
+}
+
+function save_regis(){
+    json_data = JSON.parse(localStorage.getItem("data"));
+    //json_data = []
+    let email = (document.getElementById("regisuser").value) || '';
+    let password = (document.getElementById("regispass").value) || '';
+    if (email == '' || password == ''){
+        window.alert("Email und/oder Passwort leer")
+        
+    }
+    else if (json_data.find(user => user.email === email)){
+        window.alert("User " + email + " existiert bereits.")
+        console.log(json_data)
+    }
+    else{
+        new_user= {"email": email, "password": password, "games": []}
+        json_data.push(new_user)
+        localStorage.setItem("data", JSON.stringify(json_data))
+    }
+    console.log(json_data)
+}
+
+function delete_user(){
+    let email = (document.getElementById("regisuser").value) || '';
+    let password = (document.getElementById("regispass").value) || '';
+    if (email == '' || password == ''){
+        window.alert("Email und/oder Passwort leer")
+    }
+
+    let del_user = json_data.find(user => user.email === email)
+    if (del_user){
+        if (del_user.password === password){
+            json_data = json_data.filter(user => user.email !== email)
+            console.log(json_data)
+        }
+        else{
+            window.alert("Passwort ist falsch")
+        }
+    }
+    else{
+        window.alert("user existiert nicht")
+        console.log(json_data)
+    }
+    localStorage.setItem("data", JSON.stringify(json_data))
+}
 
 function generateFields() {
     let container = document.getElementById("container2");
@@ -91,7 +144,7 @@ function new_course(){
     
 }
 
-function sendMail() {
+function sendMail(){
     let name = "Max Mustermann";
     let nachricht = "Hallo " + name + ",\ndein Golf-Handicap wurde aktualisiert und ist nun XX.\nMit freundichen Grüßen dein Gold-HCC Team";
     let mailtoLink = "mailto:empfaenger@example.com"
@@ -99,3 +152,4 @@ function sendMail() {
         + "&body=" + encodeURIComponent(nachricht);
     window.location.href = mailtoLink;
 }
+
