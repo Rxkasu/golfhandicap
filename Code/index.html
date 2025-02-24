@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="styles.css">
-    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div id="buttonsContainer" style="display: flex">
-        <div style="width: 50%">
+        <div id="calculate" style="width: 50%">
             <input type="button" id="new_course" value="Neuer Kurs" onclick="new_course()">
             <input type="button" id="generate_fields" value="Neues 18-loch" onclick="generateFields()">
             
         </div>
         <div id="logreg">
-            <input type="button" id="loginbut" value="login" onclick="login()">
-            <input type="button" id="regisbut" value="register" onclick="register()">
+            <input type="button" id="loginbut" value="login" onclick="login_block()">
+            <input type="button" id="regisbut" value="register" onclick="register_block()">
+        </div>
+        <div id="logback">
+            <input type="button" id="logout" value="logout" onclick="logout()">
             <button onclick="window.print()">Drucken</button>
             <button onclick="sendMail()">E-Mail senden (test)</button>
         </div>
@@ -36,13 +39,14 @@
         <input type="text" id="loginuser" placeholder="E-Mail Adresse">
         <input type="password" id="loginpass" placeholder="Password">
         <input type="button" id="close_con3" value="schließen" onclick="close_con(this)">
+        <input type="button" id="try_login" value="login" onclick="login()">
     </div>
     <div id="register">
         <input type="text" id="regisuser" placeholder="E-mail Adresse">
         <input type="password" id="regispass" placeholder="Password">
         <input type="button" id="close_con3" value="schließen" onclick="close_con(this)">
         <input type="button" id="save_regis" value="Registrieren" onclick="save_regis()">
-        <input type="button" id="delete" value="Benutzer löschen" onclick="delete_user()">
+        <input type="button" id="delete_user" value="Benutzer löschen" onclick="delete_user()">
     </div>
     <script src="script.js"></script>
 </body>

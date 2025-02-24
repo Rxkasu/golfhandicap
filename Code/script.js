@@ -11,6 +11,7 @@ function create_json(){
     //}
 }
 
+// Gets actual Date in Day/Month/Year-format
 function get_date(){
     let today = new Date();
     let day = (today.getDate().toString().padStart(2, '0'))
@@ -20,46 +21,113 @@ function get_date(){
     return date
 }
 
-function login(){
+// Shows Block to Log in
+function login_block(){
     let container = document.getElementById("login")
     container.style.display = "block"
 }
-function register(){
+
+// Logs in user if user exists and password fits username
+function login(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let email = (document.getElementById("loginuser").value) || '';
+    let password = (document.getElementById("loginpass").value) || '';
+    if (email == '' || password == ''){                                 // Check for inputs
+        window.alert("Email und/oder Passwort leer")
+        
+    }
+    let log_user = json_data.find(user => user.email === email)
+
+    if (log_user){                                                      // Check if user exists
+        if (log_user.password === password){                            // Check if Password is correct
+            logged_in = true
+            current_user_data = log_user
+            close_con(document.getElementById("try_login"))
+            showlogg()
+        }
+        else{
+            window.alert("Passwort ist falsch")
+            logged_in = false
+        }
+    }
+    else{
+        window.alert("user existiert nicht")
+        console.log(json_data)
+    }
+    console.log(logged_in)
+}
+
+// logs out users
+function logout(){
+    if (logged_in == true){                                             // Check if user is logged in
+        logged_in = false
+        showlogg()
+        window.alert("Erfolgreich ausgeloggt")
+    }
+    else{
+        window.alert("Nicht eingeloggt")
+    }
+    
+}
+
+// shows user calculator
+function showlogg(){
+    let visible = document.getElementById("calculate")                  // necessary calculator buttons
+    let user_privilege = document.getElementById("logback")             // logout and E-mail buttons
+    let log_reg = document.getElementById("logreg")                     // Login and Register buttons
+    if (logged_in == true){                                             // Check if user is logged in
+        visible.style.display = "block"
+        user_privilege.style.display = "block"
+        log_reg.style.display = "none"
+    }
+    else{
+        visible.style.display = "none"
+        user_privilege.style.display = "none"
+        log_reg.style.display = "block"
+    }
+    
+}
+
+// Shows register-Block
+function register_block(){
     let container = document.getElementById("register")
     container.style.display = "block"
 }
 
+// Saves a newly registered User
 function save_regis(){
-    json_data = JSON.parse(localStorage.getItem("data"));
+    let json_data = JSON.parse(localStorage.getItem("data"));               // Load JSON from local storage of browser
     //json_data = []
     let email = (document.getElementById("regisuser").value) || '';
     let password = (document.getElementById("regispass").value) || '';
-    if (email == '' || password == ''){
+    if (email == '' || password == ''){                                 // Check for inputs
         window.alert("Email und/oder Passwort leer")
         
     }
-    else if (json_data.find(user => user.email === email)){
+    else if (json_data.find(user => user.email === email)){             // Check if user already exists
         window.alert("User " + email + " existiert bereits.")
         console.log(json_data)
     }
     else{
         new_user= {"email": email, "password": password, "games": []}
-        json_data.push(new_user)
-        localStorage.setItem("data", JSON.stringify(json_data))
+        json_data.push(new_user)                                        // Append new user
+        localStorage.setItem("data", JSON.stringify(json_data))         // save JSON with new user
     }
     console.log(json_data)
 }
 
+// Deletes a registered user
 function delete_user(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
     let email = (document.getElementById("regisuser").value) || '';
     let password = (document.getElementById("regispass").value) || '';
-    if (email == '' || password == ''){
+    if (email == '' || password == ''){                                 // Check for inputs
         window.alert("Email und/oder Passwort leer")
     }
 
     let del_user = json_data.find(user => user.email === email)
     if (del_user){
-        if (del_user.password === password){
+        if (del_user.password === password){                            // Check if Password is correct
             json_data = json_data.filter(user => user.email !== email)
             console.log(json_data)
         }
@@ -71,9 +139,10 @@ function delete_user(){
         window.alert("user existiert nicht")
         console.log(json_data)
     }
-    localStorage.setItem("data", JSON.stringify(json_data))
+    localStorage.setItem("data", JSON.stringify(json_data))             // Save JSON 
 }
 
+// Generates 18x3 inputfields for 18 holes with par, hcp and hits
 function generateFields() {
     let container = document.getElementById("container2");
     let inputs = container.querySelectorAll("input[type=text]");
@@ -84,19 +153,19 @@ function generateFields() {
         let div = document.createElement("div");
         div.className = "input-group";
 
-        let input1 = document.createElement("input");
+        let input1 = document.createElement("input");                   // First collumn Par
         input1.type = "text";
         input1.placeholder = `par - Loch ${i}`;
         input1.id = `par${i}`
         //input1.defaultValue = 0
 
-        let input2 = document.createElement("input");
+        let input2 = document.createElement("input");                   // Second collumn Handycap
         input2.type = "text";
         input2.placeholder = `hcp - Loch ${i}`;
         input2.id = `hcp${i}`
         //input2.defaultValue = 0
 
-        let input3 = document.createElement("input");
+        let input3 = document.createElement("input");                   // Third collumn needed hits
         input3.type = "text";
         input3.placeholder = `hits - Loch ${i}`;
         input3.id = `hits${i}`
@@ -109,10 +178,14 @@ function generateFields() {
         container.appendChild(div);
     }
 }
+
+// Closes the window of a button
 function close_con(button){
     let container = button.parentElement;
     container.style.display= 'none'
 }
+
+// saves data of an 18-hole-game in an array
 function save_inputs(){
     create_json()
     game_data = {"game_id": '',"course_name": '', "date": get_date(), "hcp_index": 0, "course_rating": '', "slope_rating": '',
@@ -135,9 +208,9 @@ function save_inputs(){
     }
     json_data.games = json_data.games.concat(game_data)
     console.log(JSON.stringify(json_data));
-    //localStorage.setItem("holedata", JSON.stringify(json_data))
 }
 
+// Makes container for a new course visible
 function new_course(){
     let container = document.getElementById("container");
     container.style.display = "block"
