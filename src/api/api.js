@@ -5,7 +5,6 @@ import cors from 'cors';
 import { promises, readFile } from 'fs';
 const fsp = promises;
 import { join } from 'path';
-import e from 'express';
 
 const app = express();
 app.use(cors());
@@ -13,13 +12,12 @@ app.use(json());
 
 app.get('/api', (req, res) => {
     console.log("HTTP GET /api received");
-    readFile('json/api.json', 'utf-8', (err, data) => {
-        if (err) {
-            returnError(res, err);
-            return;
-        }
-        res.send(data);
-    });
+    let data = {
+        "version": "0.0.1",
+        "name": "api", 
+        "description": "API for the application"
+    }
+    res.status(200).send(data);
 });
 
 app.post('/login', async (req, res) => {
@@ -83,7 +81,7 @@ app.post('/register', async (req, res) => {
                 "password": register.password
             }
             await fsp.writeFile('json/users/' + user.user_id + '.json', JSON.stringify(user));
-            
+
             let player = {
                 "user_id": user_id,
                 "surname": register.surname,
@@ -209,10 +207,6 @@ app.delete('/user/:user_id', async (req, res) => {
     }
 });
 
-
-
-
-
 app.listen(30000, () => {
     console.log("Server is running on port" + 30000);
 });
@@ -235,9 +229,4 @@ async function readFiles(dirname) {
         data.push(JSON.parse(content));
     }));
     return data;
-}
-
-async function generateUserId() {
-    const data = await readFiles('json/players');
-    return data.length + 1;
 }
