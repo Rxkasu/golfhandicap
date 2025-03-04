@@ -2,8 +2,8 @@
 function create_json(){
     //if (localStorage.getItem("data") == null){
 
-        json_data= {"user_id": '', "sur_name": '', "first_name": '', "games": []}
-        localStorage.setItem("data", JSON.stringify(json_data))
+        //json_data= {"user_id": '', "sur_name": '', "first_name": '', "games": []}
+        //localStorage.setItem("data", JSON.stringify(json_data))
     //}
     //else {
     //    let data = localStorage.getItem("data")
@@ -23,6 +23,7 @@ function get_date(){
 
 // Shows Block to Log in
 function login_block(){
+    document.getElementById("register").style.display = "none"
     let container = document.getElementById("login")
     container.style.display = "block"
 }
@@ -44,17 +45,19 @@ function login(){
             current_user_data = log_user
             close_con(document.getElementById("try_login"))
             showlogg()
+            console.log(log_user)
         }
         else{
             window.alert("Passwort ist falsch")
             logged_in = false
+            return
         }
     }
     else{
         window.alert("user existiert nicht")
         console.log(json_data)
+        return
     }
-    console.log(logged_in)
 }
 
 // logs out users
@@ -90,6 +93,7 @@ function showlogg(){
 
 // Shows register-Block
 function register_block(){
+    document.getElementById("login").style.display = "none"
     let container = document.getElementById("register")
     container.style.display = "block"
 }
@@ -97,7 +101,7 @@ function register_block(){
 // Saves a newly registered User
 function save_regis(){
     let json_data = JSON.parse(localStorage.getItem("data"));               // Load JSON from local storage of browser
-    //json_data = []
+    json_data = []
     let email = (document.getElementById("regisuser").value) || '';
     let password = (document.getElementById("regispass").value) || '';
     if (email == '' || password == ''){                                 // Check for inputs
@@ -148,6 +152,16 @@ function generateFields() {
     let inputs = container.querySelectorAll("input[type=text]");
     inputs.forEach(input => input.remove());
     container.style.display = "block"
+    let input_name = document.createElement("input");
+    input_name.type ="text";
+    input_name.placeholder = "Kursname"
+    input_name.id = "course_name"
+    container.appendChild(input_name)
+    let delete_holes = document.createElement("input");
+    delete_holes.type = "button";
+    delete_holes.value = "Kurs löschen"
+    delete_holes.onclick = delete_game;
+    container.appendChild(delete_holes)
 
     for (let i = 1; i <= 18; i++) {
         let div = document.createElement("div");
@@ -187,8 +201,14 @@ function close_con(button){
 
 // saves data of an 18-hole-game in an array
 function save_inputs(){
-    create_json()
-    game_data = {"game_id": '',"course_name": '', "date": get_date(), "hcp_index": 0, "course_rating": '', "slope_rating": '',
+    //create_json()
+    let name = document.getElementById("course_name").value
+    console.log("name:"+ name);
+    if (!name.trim()){                                            // Check for name
+        window.alert("Bitte Namen eingeben")
+        return
+    }
+    game_data = {"game_id": '',"course_name": name, "date": get_date(), "hcp_index": 0, "course_rating": '', "slope_rating": '',
             "holes": [{"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
             {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
             {"hole_id": 7, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 8, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 9, "par": 0, "hcp": 0, "hits":0},
@@ -201,14 +221,53 @@ function save_inputs(){
         let hcp = document.getElementById(`hcp${i}`).value || 0;
         let hits = document.getElementById(`hits${i}`).value || 0;
 
-        // Setze die Werte im JSON-Objekt
+        // Set values in JSON-object
         game_data.holes[i - 1].par = par ? parseInt(par) : 0;
         game_data.holes[i - 1].hcp = hcp ? parseInt(hcp) : 0;
         game_data.holes[i - 1].hits = hits ? parseInt(hits) : 0;
     }
-    json_data.games = json_data.games.concat(game_data)
+
+    // Check for duplicates
+    let seenHcps = new Map(); 
+
+    for (let hole of game_data.holes) {
+        let hcp = hole.hcp;
+        
+        if (seenHcps.has(hcp)) {
+            let firstHoleId = seenHcps.get(hcp);                        // First hole with same hcp
+            window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}`);
+            return 
+        }
+        
+        seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole 
+    }
+
+    // Add new course to user
+    for (let i = 0; i < json_data.length; i++) {
+        if (json_data[i].email === current_user_data.email) {
+          json_data[i].games.push(game_data);
+          localStorage.setItem("data", JSON.stringify(json_data))
+          break;  
+        }
+      }
     console.log(JSON.stringify(json_data));
 }
+
+function delete_game(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+
+    json_data.forEach(user => {
+        let gameToRemove = document.getElementById("course_name").value
+        if (user.email === current_user_data.email) {
+            user.games = user.games.filter(game => game.course_name !== gameToRemove);
+        }
+    });
+    console.log(JSON.stringify(json_data));
+    localStorage.setItem("data", JSON.stringify(json_data))
+          
+}
+    
+
 
 // Makes container for a new course visible
 function new_course(){

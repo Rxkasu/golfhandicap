@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+  <script src="script.js"></script>
+
 </head>
 <body>
     <div id="buttonsContainer" style="display: flex">
@@ -34,6 +36,7 @@
     <div id="container2">
         <input type="button" id="save18_hole" value="18 Loch speichern" onclick="save_inputs()">
         <input type="button" id="closecon2" value="schließen" onclick="close_con(this)">
+        <input type="text" id="course_name" placeholder="Kursname">
     </div>
     <div id="login"> 
         <input type="text" id="loginuser" placeholder="E-Mail Adresse">
@@ -48,6 +51,5 @@
         <input type="button" id="save_regis" value="Registrieren" onclick="save_regis()">
         <input type="button" id="delete_user" value="Benutzer löschen" onclick="delete_user()">
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
