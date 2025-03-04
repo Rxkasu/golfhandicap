@@ -1,11 +1,11 @@
-
+import Ajv from 'ajv';
+import schema from './json/schema/json-schema.json' assert { type: "json" };
 
 export function validateJson(json) {
 
-    const Ajv = require('ajv');
+
     const ajv = new Ajv({allErrors: true});
 
-    const schema = require('./json/schema/json-schema.json');
    
     if(!ajv.validateSchema(schema)) {
         console.error('JSON Schema not valid!\nValidation Errors:', ajv.errorsText());
