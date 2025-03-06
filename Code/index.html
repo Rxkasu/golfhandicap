@@ -6,7 +6,8 @@
     <title>Document</title>
     <link rel="stylesheet" href="styles.css">
     <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
-  <script src="script.js"></script>
+    <script src="manipulateHtml.js" defer></script>
+    <script src="script.js" defer></script>
 
 </head>
 <body>
@@ -37,7 +38,7 @@
     <div id="container2">
         <input type="button" id="save18_hole" value="18 Loch speichern" onclick="save_inputs()">
         <input type="button" id="closecon2" value="schließen" onclick="close_con(this)">
-        <input type="text" id="course_name" placeholder="Kursname">
+        <select id="courseSelect"></select>
     </div>
     <div id="login"> 
         <input type="text" id="loginuser" placeholder="E-Mail Adresse">
