@@ -70,10 +70,9 @@ function logout(){
     else{
         window.alert("Nicht eingeloggt")
     }
-    
 }
 
-// shows user calculator
+// shows and hides user Elements depending if logged in
 function showlogg(){
     let visible = document.getElementById("calculate")                  // necessary calculator buttons
     let user_privilege = document.getElementById("logback")             // logout and E-mail buttons
@@ -88,7 +87,6 @@ function showlogg(){
         user_privilege.style.display = "none"
         log_reg.style.display = "block"
     }
-    
 }
 
 // Shows register-Block
@@ -152,17 +150,20 @@ function generateFields() {
     let inputs = container.querySelectorAll("input[type=text]");
     inputs.forEach(input => input.remove());
     container.style.display = "block"
+    // Extra input-field
     let input_name = document.createElement("input");
     input_name.type ="text";
     input_name.placeholder = "Kursname"
     input_name.id = "course_name"
     container.appendChild(input_name)
+    // Extra button
     let delete_holes = document.createElement("input");
     delete_holes.type = "button";
     delete_holes.value = "Kurs löschen"
     delete_holes.onclick = delete_game;
     container.appendChild(delete_holes)
 
+    // Generating fields
     for (let i = 1; i <= 18; i++) {
         let div = document.createElement("div");
         div.className = "input-group";
@@ -201,7 +202,6 @@ function close_con(button){
 
 // saves data of an 18-hole-game in an array
 function save_inputs(){
-    //create_json()
     let name = document.getElementById("course_name").value
     console.log("name:"+ name);
     if (!name.trim()){                                            // Check for name
@@ -253,6 +253,7 @@ function save_inputs(){
     console.log(JSON.stringify(json_data));
 }
 
+// Delets a single 18-hole game
 function delete_game(){
     let json_data = JSON.parse(localStorage.getItem("data"));
 
@@ -266,14 +267,31 @@ function delete_game(){
     localStorage.setItem("data", JSON.stringify(json_data))
           
 }
-    
-
 
 // Makes container for a new course visible
 function new_course(){
     let container = document.getElementById("container");
     container.style.display = "block"
-    
+}
+
+function save_course(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let course_name = document.getElementById("course_name_ra").value
+    json_data.forEach(user => {
+        if (user.email === current_user_data.email) {
+            for (let i = 0; i < user.games.length; i++){
+                if (user.games.course_name === course_name){
+                    user.games.course_rating = document.getElementById("course_rating").value
+                    user.games.slope_rating = document.getElementById("slope").value
+                    console.log(JSON.stringify(json_data));
+                    localStorage.setItem("data", JSON.stringify(json_data))
+                    break
+                }
+            } 
+        }
+        window.alert("Kurs " + course_name + " existiert nicht!")
+    });
+    console.log(JSON.stringify(json_data));
 }
 
 function sendMail(){
@@ -285,3 +303,17 @@ function sendMail(){
     window.location.href = mailtoLink;
 }
 
+
+function course_hdc(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let slope_rating = ''
+    let course_rating = ''
+    for (let i = 0; i < json_data.length; i++) {
+        if (json_data[i].email === current_user_data.email) {
+            slope_rating = json_data[i].slope_rating
+            course_rating = json_data[i].course_rating
+            break
+        }
+    }
+    let course_hdc = hdc_in * slope_rating/113 +course_rating - par
+}
