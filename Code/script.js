@@ -64,6 +64,10 @@ function login(){
 function logout(){
     if (logged_in == true){                                             // Check if user is logged in
         logged_in = false
+        document.getElementById("regispass").value = "";
+        document.getElementById("loginpass").value = "";
+        close_con(document.getElementById("closecon2"))
+        close_con(document.getElementById("close"))
         showlogg()
         window.alert("Erfolgreich ausgeloggt")
     }
@@ -91,15 +95,13 @@ function showlogg(){
 
 // Shows register-Block
 function register_block(){
-    document.getElementById("login").style.display = "none"
-    let container = document.getElementById("register")
-    container.style.display = "block"
+    document.getElementById("login").style.display = "none";
+    document.getElementById("register").style.display = "block";
 }
 
 // Saves a newly registered User
 function save_regis(){
-    let json_data = JSON.parse(localStorage.getItem("data"));               // Load JSON from local storage of browser
-    json_data = []
+    let json_data = JSON.parse(localStorage.getItem("data")) || [];               // Load JSON from local storage of browser
     let email = (document.getElementById("regisuser").value) || '';
     let password = (document.getElementById("regispass").value) || '';
     if (email == '' || password == ''){                                 // Check for inputs
@@ -114,6 +116,10 @@ function save_regis(){
         new_user= {"email": email, "password": password, "games": []}
         json_data.push(new_user)                                        // Append new user
         localStorage.setItem("data", JSON.stringify(json_data))         // save JSON with new user
+        current_user_data = new_user;
+        logged_in = true;
+        close_con(document.getElementById("save_regis"))
+        showlogg()
     }
     console.log(json_data)
 }

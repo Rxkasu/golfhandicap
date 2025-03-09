@@ -1,3 +1,21 @@
+/* 🌿 Hintergrund mit Blurring */
+body {
+    background: url('/Code/Resources/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+}
+
 #container {
     margin-top: 20px;
     width: 300px;
