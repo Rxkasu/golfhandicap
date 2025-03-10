@@ -48,7 +48,6 @@ function login(){
     }
     else{
         window.alert("user existiert nicht")
-        console.log(json_data)
         return
     }
 }
@@ -84,7 +83,6 @@ function register(){
 
     if (json_data.find(user => user.email === email)){             // Check if user already exists
         window.alert("User " + email + " existiert bereits.")
-        console.log(json_data)
     }
     else{
         if (password !== passwordCheck) return window.alert("Passwort und Wiederholen-Passwort stimmen nicht überein"); // Check if Password is also the Check (Wiederholen)
@@ -98,7 +96,6 @@ function register(){
         switchAuthTabs("login");
         showlogg()
     }
-    console.log(json_data)
 }
 
 // Deletes a registered user
@@ -203,7 +200,7 @@ function calculate_par(){
                         total_par = total_par + json_data[i].games[y].holes[x].par
                 }
                 json_data[i].games[y].par = total_par
-                //console.log(json_data)
+                console.log(json_data[i].games[y])
                 break
             }
             
@@ -214,12 +211,12 @@ function calculate_par(){
       localStorage.setItem("data", JSON.stringify(json_data))
 }
 
+// Deletes current 18-hole inputs of course
 function delete_holes(){
     let json_data = JSON.parse(localStorage.getItem("data"));
     let name = document.getElementById("courseSelect").value
     for (let x = 0; x < json_data.length; x++){
         if (json_data[x].email === current_user_data.email){
-            console.log(json_data[x])
             for (let y = 0; y < json_data[x].games.length; y++){
                 if (json_data[x].games[y].course_name === name){
                     json_data[x].games.splice(y, 1)
@@ -231,21 +228,52 @@ function delete_holes(){
     }
 }
 
-// Delets a single 18-hole game
-function delete_game(){
+function load_holes(){
     let json_data = JSON.parse(localStorage.getItem("data"));
-
-    json_data.forEach(user => {
-        let gameToRemove = document.getElementById("course_name").value
-        if (user.email === current_user_data.email) {
-            user.games = user.games.filter(game => game.course_name !== gameToRemove);
+    let name = document.getElementById("courseSelect").value
+    for (let x = 0; x < json_data.length; x++){
+        if (json_data[x].email === current_user_data.email){
+            for (let y = 0; y < json_data[x].games.length; y++){
+                if (json_data[x].games[y].course_name === name){
+                    for (let i = 1; i <= 18; i++) {
+                        let parInput = document.getElementById(`par${i}`);
+                        let hcpInput = document.getElementById(`hcp${i}`);
+                        let hitsInput = document.getElementById(`hits${i}`);
+                    
+                        if (parInput && hcpInput && hitsInput) {
+                            parInput.value = game_data.holes[i - 1].par;
+                            hcpInput.value = game_data.holes[i - 1].hcp;
+                            hitsInput.value = game_data.holes[i - 1].hits;
+                        }
+                    }
+                    break
+                }
+            }
         }
-    });
-    console.log(JSON.stringify(json_data));
-    localStorage.setItem("data", JSON.stringify(json_data))
-          
+        break
+    }
 }
 
+// Delets a single course game
+function delete_game(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let remove_game = document.getElementById("course_name_ra").value
+    for (x = 0; x < json_data.length; x++){
+        if (json_data[x].email === current_user_data.email) {
+            for (y = 0; y < json_data[x].games.length; y++){
+                if (json_data[x].games[y].course_name === remove_game){
+                    console.log(json_data[x].games[y])
+                    json_data[x].games.splice(y, 1);
+                    break
+                }
+            }
+        }
+        
+    }
+    console.log(JSON.stringify(json_data));
+    localStorage.setItem("data", JSON.stringify(json_data))
+}
+    
 // Makes container for a new course visible
 function new_course(){
     let container = document.getElementById("container");
@@ -257,7 +285,7 @@ function save_course(){
         course_name: document.getElementById("course_name_ra").value,
         course_rating: document.getElementById("course_rating").value,
         slope_rating: document.getElementById("slope").value,
-        par: document.getElementById("par").value
+        //par: document.getElementById("par").value
     };
 
     const emptyValue = Object.keys(course).find(key => !course[key].trim()) || null;

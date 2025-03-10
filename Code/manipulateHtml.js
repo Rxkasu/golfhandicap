@@ -72,6 +72,7 @@ function createCourseSelect() {
         option.textContent = course.course_name;
         dropdown.appendChild(option);
     });
+    dropdown.onchange = load_holes;
 }
 
 function switchAuthTabs(type) {
