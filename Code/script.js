@@ -172,6 +172,8 @@ function save_inputs(){
         seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole 
     }
 
+
+
     // Add new course to user
     for (let i = 0; i < json_data.length; i++) {
         if (json_data[i].email === current_user_data.email) {
@@ -181,6 +183,30 @@ function save_inputs(){
         }
       }
     console.log(JSON.stringify(json_data));
+}
+
+//calculates total Par of Golf-course
+function calculate_par(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let name = document.getElementById("courseSelect").value
+    let total_par = 0
+    for (let i = 0; i < json_data.length; i++) {
+        if (json_data[i].email === current_user_data.email) {
+            for (let y = 0; y <= json_data[i].games.length; y++){
+                if (json_data[i].games[y].course_name === name){
+                    for (let x = 0; x <= 17; x++){
+                        total_par = total_par + json_data[i].games[y].holes[x].par
+                }
+                json_data[i].games[y].par = total_par
+                console.log(json_data)
+                break
+            }
+            
+        }
+        break
+        }
+      }
+      
 }
 
 // Delets a single 18-hole game
