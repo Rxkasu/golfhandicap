@@ -28,6 +28,13 @@ function login_block(){
     container.style.display = "block"
 }
 
+// Login with Enter-button
+function enterlog(event){
+    if (event.key === "Enter") {
+        login();
+    }
+}
+
 // Logs in user if user exists and password fits username
 function login(){
     let json_data = JSON.parse(localStorage.getItem("data"));
@@ -144,18 +151,69 @@ function delete_user(){
     localStorage.setItem("data", JSON.stringify(json_data))             // Save JSON 
 }
 
+// Generates 18x3 inputfields for 18 holes with par, hcp and hits
+function generateFields() {
+    let container = document.getElementById("container2");
+    let inputs = container.querySelectorAll("input[type=text]");
+    inputs.forEach(input => input.remove());
+    container.style.display = "block"
+    // Extra button
+    let delete_holes = document.getElementById("delete_holes")
+    if (delete_holes) {
+        delete_holes.remove();
+    }
+    delete_holes = document.createElement("input");
+    delete_holes.id = "delete_holes"
+    delete_holes.type = "button";
+    delete_holes.value = "Kurs löschen"
+    delete_holes.onclick = delete_game;
+    container.appendChild(delete_holes)
+
+    // Generating fields
+    for (let i = 1; i <= 18; i++) {
+        let div = document.createElement("div");
+        div.className = "input-group";
+
+        let input1 = document.createElement("input");                   // First collumn Par
+        input1.type = "text";
+        input1.placeholder = `par - Loch ${i}`;
+        input1.id = `par${i}`
+        //input1.defaultValue = 0
+
+        let input2 = document.createElement("input");                   // Second collumn Handycap
+        input2.type = "text";
+        input2.placeholder = `hcp - Loch ${i}`;
+        input2.id = `hcp${i}`
+        //input2.defaultValue = 0
+
+        let input3 = document.createElement("input");                   // Third collumn needed hits
+        input3.type = "text";
+        input3.placeholder = `hits - Loch ${i}`;
+        input3.id = `hits${i}`
+        //input3.defaultValue = 0
+
+        div.appendChild(input1);
+        div.appendChild(input2);
+        div.appendChild(input3);
+
+        container.appendChild(div);
+    }
+}
+
+// Closes the window of a button
+function close_con(button){
+    let container = button.parentElement;
+    container.style.display= 'none'
+}
+
 // saves data of an 18-hole-game in an array
 function save_inputs(){
-    const course_name = document.getElementById("courseSelect").value
-    console.log("name:"+ course_name);
-    if (!course_name.trim()){                                            // Check for name
-        return window.alert("Bitte Kurs auswählen");
+    let name = document.getElementById("courseSelect").value
+    if (!name.trim()){                                            // Check for name
+        window.alert("Bitte Namen eingeben")
+        return
     }
-
-    const savedCourses = JSON.parse(localStorage.getItem("courses"));
-    const course = savedCourses.find(obj => obj.course_name === course_name);
-
-    game_data = {"game_id": '',"course_name": course.course_name, "date": get_date(), "hcp_index": 0, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": course.par,
+    game_data = {"game_id": '',"course_name": name, "date": get_date(), "hcp_index": 0, "course_rating": '', "slope_rating": '', "par": '',
             "holes": [{"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
             {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
             {"hole_id": 7, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 8, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 9, "par": 0, "hcp": 0, "hits":0},
@@ -192,12 +250,44 @@ function save_inputs(){
     // Add new course to user
     for (let i = 0; i < json_data.length; i++) {
         if (json_data[i].email === current_user_data.email) {
+            if (json_data[i].games.length > 0){
+                for (let x = 0; x <= json_data[i].games.length; x++){
+                    if(json_data[i].games[x].course_name === name){
+                        json_data[i].games.splice(x, 1)
+                    }
+            }
+            
+            }
           json_data[i].games.push(game_data);
           localStorage.setItem("data", JSON.stringify(json_data))
           break;  
         }
       }
-    console.log(JSON.stringify(json_data));
+      calculate_par();
+}
+
+//calculates total Par of Golf-course
+function calculate_par(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let name = document.getElementById("courseSelect").value
+    let total_par = 0
+    for (let i = 0; i < json_data.length; i++) {
+        if (json_data[i].email === current_user_data.email) {
+            for (let y = 0; y <= json_data[i].games.length; y++){
+                if (json_data[i].games[y].course_name === name){
+                    for (let x = 0; x <= 17; x++){
+                        total_par = total_par + json_data[i].games[y].holes[x].par
+                }
+                json_data[i].games[y].par = total_par
+                console.log(json_data)
+                break
+            }
+            
+        }
+        break
+        }
+      }
+      
 }
 
 // Delets a single 18-hole game
@@ -205,7 +295,7 @@ function delete_game(){
     let json_data = JSON.parse(localStorage.getItem("data"));
 
     json_data.forEach(user => {
-        let gameToRemove = document.getElementById("course_name").value
+        let gameToRemove = document.getElementById("courseSelect").value
         if (user.email === current_user_data.email) {
             user.games = user.games.filter(game => game.course_name !== gameToRemove);
         }
@@ -222,38 +312,32 @@ function new_course(){
 }
 
 function save_course(){
-    const course = {
-        course_name: document.getElementById("course_name_ra").value,
-        course_rating: document.getElementById("course_rating").value,
-        slope_rating: document.getElementById("slope").value,
-        par: document.getElementById("par").value
-    };
-
-    const emptyValue = Object.keys(course).find(key => !course[key].trim()) || null;
-    if (emptyValue) {
-        return window.alert(emptyValue + " darf nicht leer sein");
-    }
-
-    const savedCourses = JSON.parse(localStorage.getItem("courses")) || [];
-
-    const courseNameDuplicate = savedCourses.find(obj => obj.course_name === course.course_name) || null;
-    if (courseNameDuplicate) {
-        return window.alert(course.course_name + " ist schon vergeben");
-    }
-
-    savedCourses.push(course);
-
-    localStorage.setItem("courses", JSON.stringify(savedCourses));
-    createCourseSelect();
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let course_name = document.getElementById("course_name_ra").value
+    json_data.forEach(user => {
+        if (user.email === current_user_data.email) {
+            for (let i = 0; i < user.games.length; i++){
+                if (user.games.course_name === course_name){
+                    user.games.course_rating = document.getElementById("course_rating").value
+                    user.games.slope_rating = document.getElementById("slope").value
+                    console.log(JSON.stringify(json_data));
+                    localStorage.setItem("data", JSON.stringify(json_data))
+                    break
+                }
+            } 
+        }
+        window.alert("Kurs " + course_name + " existiert nicht!")
+    });
+    console.log(JSON.stringify(json_data));
 }
 
 function sendMail(){
-    let name = current_user_data.email.substring(0, current_user_data.email.indexOf("@"));
-    let nachricht = "Hallo " + name + ",\ndein Golf-Handicap wurde aktualisiert und ist nun XX.\nMit freundlichen Grüßen dein Golf-HCC Team";
-    let mailtoLink = "mailto: " + current_user_data.email
+    let name = "Max Mustermann";
+    let nachricht = "Hallo " + name + ",\ndein Golf-Handicap wurde aktualisiert und ist nun XX.\nMit freundichen Grüßen dein Gold-HCC Team";
+    let mailtoLink = "mailto:empfaenger@example.com"
         + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
         + "&body=" + encodeURIComponent(nachricht);
-    window.open(mailtoLink, "_blank");
+    window.location.href = mailtoLink;
 }
 
 
@@ -269,50 +353,4 @@ function course_hdc(){
         }
     }
     let course_hdc = hdc_in * slope_rating/113 +course_rating - par
-}
-
-function whci() {
-    const games = current_user_data.games;
-    const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-
-    games.slice(-20);
-    const scoreDifferentials = getScoreDifferentials(games);
-
-    if (games.length <= 3) {
-        return scoreDifferentials[0] - 2;
-    } else if (games.length === 4) {
-        return scoreDifferentials[0] - 1;
-    } else if (games.length === 5) {
-        return scoreDifferentials[0];
-    } else if (games.length === 6) {
-        return mean(scoreDifferentials.slice(0, 2)) - 1;
-    } else if (games.length <= 8) {
-        return mean(scoreDifferentials.slice(0, 2));
-    } else if (games.length <= 11) {
-        return mean(scoreDifferentials.slice(0, 3));
-    } else if (games.length <= 14) {
-        return mean(scoreDifferentials.slice(0, 4));
-    } else if (games.length <= 16) {
-        return mean(scoreDifferentials.slice(0, 5));
-    } else if (games.length <= 18) {
-        return mean(scoreDifferentials.slice(0, 6));
-    } else if (games.length === 19) {
-        return mean(scoreDifferentials.slice(0, 7));
-    } else {
-        return mean(scoreDifferentials.slice(0, 8));
-    }
-}
-
-function getScoreDifferentials(games) {
-    const scoreDifferentials = [];
-    games.forEach((game) => {
-        scoreDifferentials.push(scoreDifferential(game));
-    });
-    return scoreDifferentials.sort((a, b) => a - b);
-}
-
-function scoreDifferential(game) {
-    //const game = current_user_data.games[gameId];
-    const allhits = holes.reduce((acc, hole) => acc + hole.hits, 0);
-    return ((allhits - game.course_rating) * 113/game.slope_rating).toFixed(1);
 }

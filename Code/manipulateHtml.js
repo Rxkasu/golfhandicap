@@ -13,7 +13,12 @@ function generateFields() {
     input_name.id = "course_name"
     //container.appendChild(input_name)
     // Extra button
-    let delete_holes = document.createElement("input");
+    let delete_holes = document.getElementById("delete_holes")
+    if (delete_holes == null) {
+        delete_holes.remove();
+    }
+    delete_holes = document.createElement("input");
+    delete_holes = document.createElement("input");
     delete_holes.type = "button";
     delete_holes.value = "Kurs löschen"
     delete_holes.onclick = delete_game;
