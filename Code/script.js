@@ -21,31 +21,24 @@ function get_date(){
     return date
 }
 
-// Shows Block to Log in
-function login_block(){
-    document.getElementById("register").style.display = "none"
-    let container = document.getElementById("login")
-    container.style.display = "block"
-}
-
 // Logs in user if user exists and password fits username
 function login(){
     let json_data = JSON.parse(localStorage.getItem("data"));
-    let email = (document.getElementById("loginuser").value) || '';
-    let password = (document.getElementById("loginpass").value) || '';
-    if (email == '' || password == ''){                                 // Check for inputs
-        window.alert("Email und/oder Passwort leer")
-        
-    }
+    let email = (document.getElementById("loginEmail").value);
+    let password = (document.getElementById("loginPass").value);
+
+    if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Check for inputs
+    if (!password || !password.trim()) return window.alert("Passwort-Feld ist leer");
+
     let log_user = json_data.find(user => user.email === email)
 
     if (log_user){                                                      // Check if user exists
         if (log_user.password === password){                            // Check if Password is correct
-            logged_in = true
-            current_user_data = log_user
-            close_con(document.getElementById("try_login"))
-            showlogg()
-            console.log(log_user)
+            logged_in = true;
+            current_user_data = log_user;
+            hideAuthModal();
+            showContentModal();
+            setUserInfo(email, current_user_data.role);
         }
         else{
             window.alert("Passwort ist falsch")
@@ -64,61 +57,45 @@ function login(){
 function logout(){
     if (logged_in == true){                                             // Check if user is logged in
         logged_in = false
-        document.getElementById("regispass").value = "";
-        document.getElementById("loginpass").value = "";
-        close_con(document.getElementById("closecon2"))
-        close_con(document.getElementById("close"))
-        showlogg()
-        window.alert("Erfolgreich ausgeloggt")
+        document.getElementById("loginPass").value = "";
+        document.getElementById("regisPass").value = "";
+        document.getElementById("regisPassCheck").value = "";
+        clearUserInfo();
+        hideContentModal();
+        showAuthModal();
+        notificationAlert("Erfolgreich ausgeloggt");
     }
     else{
         window.alert("Nicht eingeloggt")
     }
 }
 
-// shows and hides user Elements depending if logged in
-function showlogg(){
-    let visible = document.getElementById("calculate")                  // necessary calculator buttons
-    let user_privilege = document.getElementById("logback")             // logout and E-mail buttons
-    let log_reg = document.getElementById("logreg")                     // Login and Register buttons
-    if (logged_in == true){                                             // Check if user is logged in
-        visible.style.display = "block"
-        user_privilege.style.display = "block"
-        log_reg.style.display = "none"
-    }
-    else{
-        visible.style.display = "none"
-        user_privilege.style.display = "none"
-        log_reg.style.display = "block"
-    }
-}
-
-// Shows register-Block
-function register_block(){
-    document.getElementById("login").style.display = "none";
-    document.getElementById("register").style.display = "block";
-}
-
 // Saves a newly registered User
-function save_regis(){
+function register(){
     let json_data = JSON.parse(localStorage.getItem("data")) || [];               // Load JSON from local storage of browser
-    let email = (document.getElementById("regisuser").value) || '';
-    let password = (document.getElementById("regispass").value) || '';
-    if (email == '' || password == ''){                                 // Check for inputs
-        window.alert("Email und/oder Passwort leer")
-        
-    }
-    else if (json_data.find(user => user.email === email)){             // Check if user already exists
+    let email = (document.getElementById("regisEmail").value);
+    let role = (document.getElementById("regisRole").value);
+    let password = (document.getElementById("regisPass").value);
+    let passwordCheck = (document.getElementById("regisPassCheck").value);
+
+    if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Check for inputs
+    if (!password || !password.trim()) return window.alert("Passwort-Feld ist leer");
+    if (!password || !passwordCheck.trim()) return window.alert("Passwort-Wiederholen-Feld ist leer");
+
+    if (json_data.find(user => user.email === email)){             // Check if user already exists
         window.alert("User " + email + " existiert bereits.")
         console.log(json_data)
     }
     else{
-        new_user= {"email": email, "password": password, "games": []}
+        if (password !== passwordCheck) return window.alert("Passwort und Wiederholen-Passwort stimmen nicht überein"); // Check if Password is also the Check (Wiederholen)
+
+        new_user= {"email": email, "role": role, "password": password, "games": []}
         json_data.push(new_user)                                        // Append new user
         localStorage.setItem("data", JSON.stringify(json_data))         // save JSON with new user
         current_user_data = new_user;
         logged_in = true;
-        close_con(document.getElementById("save_regis"))
+        notificationAlert("Registrierung erfolgreich! Jetzt kannst du dich einloggen.");
+        switchAuthTabs("login");
         showlogg()
     }
     console.log(json_data)
@@ -260,65 +237,4 @@ function sendMail(){
         + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
         + "&body=" + encodeURIComponent(nachricht);
     window.open(mailtoLink, "_blank");
-}
-
-
-function course_hdc(){
-    let json_data = JSON.parse(localStorage.getItem("data"));
-    let slope_rating = ''
-    let course_rating = ''
-    for (let i = 0; i < json_data.length; i++) {
-        if (json_data[i].email === current_user_data.email) {
-            slope_rating = json_data[i].slope_rating
-            course_rating = json_data[i].course_rating
-            break
-        }
-    }
-    let course_hdc = hdc_in * slope_rating/113 +course_rating - par
-}
-
-function whci() {
-    const games = current_user_data.games;
-    const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-
-    games.slice(-20);
-    const scoreDifferentials = getScoreDifferentials(games);
-
-    if (games.length <= 3) {
-        return scoreDifferentials[0] - 2;
-    } else if (games.length === 4) {
-        return scoreDifferentials[0] - 1;
-    } else if (games.length === 5) {
-        return scoreDifferentials[0];
-    } else if (games.length === 6) {
-        return mean(scoreDifferentials.slice(0, 2)) - 1;
-    } else if (games.length <= 8) {
-        return mean(scoreDifferentials.slice(0, 2));
-    } else if (games.length <= 11) {
-        return mean(scoreDifferentials.slice(0, 3));
-    } else if (games.length <= 14) {
-        return mean(scoreDifferentials.slice(0, 4));
-    } else if (games.length <= 16) {
-        return mean(scoreDifferentials.slice(0, 5));
-    } else if (games.length <= 18) {
-        return mean(scoreDifferentials.slice(0, 6));
-    } else if (games.length === 19) {
-        return mean(scoreDifferentials.slice(0, 7));
-    } else {
-        return mean(scoreDifferentials.slice(0, 8));
-    }
-}
-
-function getScoreDifferentials(games) {
-    const scoreDifferentials = [];
-    games.forEach((game) => {
-        scoreDifferentials.push(scoreDifferential(game));
-    });
-    return scoreDifferentials.sort((a, b) => a - b);
-}
-
-function scoreDifferential(game) {
-    //const game = current_user_data.games[gameId];
-    const allhits = holes.reduce((acc, hole) => acc + hole.hits, 0);
-    return ((allhits - game.course_rating) * 113/game.slope_rating).toFixed(1);
 }

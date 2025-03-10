@@ -3,55 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
-    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
-    <script src="manipulateHtml.js" defer></script>
-    <script src="script.js" defer></script>
+    <title>Golf-HCC</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="authStyles.css">
+    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+    <script src="script.js" defer></script>
+    <script src="manipulateHtml.js" defer></script>
+    <script src="calculations.js" defer></script>
 </head>
 <body>
-    <div id="buttonsContainer" style="display: flex">
-        <div id="calculate" style="width: 50%">
-            <input type="button" id="new_course" value="Neuer Kurs" onclick="new_course()">
-            <input type="button" id="generate_fields" value="Neues 18-loch" onclick="generateFields()">
-            
+    <div id="main_div">
+        <nav id="nav_div" class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">Golf-Handicap Calculator</a>
+                <div class="d-flex align-items-center">
+                    <span id="user-info" class="me-3 fw-bold"></span>
+                    <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <div id="auth-backdrop" class="backdrop">
+            <div class="auth-container">
+                <!-- Tabs für Login & Register -->
+                <ul class="nav nav-tabs" id="authTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="login-tab" href="#" onclick="switchAuthTabs('login')">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="register-tab" href="#" onclick="switchAuthTabs('register')">Register</a>
+                    </li>
+                </ul>
+
+                <!-- Login Form -->
+                <div id="login-form">
+                    <h4 class="mt-3">Login</h4>
+                    <form onsubmit="login(); return false;">
+                        <div class="mb-3">
+                            <label class="form-label" for="loginEmail">E-Mail</label>
+                            <input id="loginEmail" type="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="loginPass">Passwort</label>
+                            <input id="loginPass" type="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Login</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="hidden">
+                    <h4 class="mt-3">Register</h4>
+                    <form onsubmit="register(); return false;">
+                        <div class="mb-3">
+                            <label class="form-label" for="regisRole">Rolle</label>
+                            <select class="form-select mb-3" id="regisRole">
+                                <option value="Golfer">Golfer</option>
+                                <option value="Sekretär">Sekretär</option>
+                                <option value="Spielführer">Spielführer</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="regisEmail">E-Mail</label>
+                            <input id="regisEmail" type="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="regisPass">Passwort</label>
+                            <input id="regisPass" type="password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="regisPassCheck">Passwort wiederholen</label>
+                            <input id="regisPassCheck" type="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Registrieren</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div id="logreg">
-            <input type="button" id="loginbut" value="login" onclick="login_block()">
-            <input type="button" id="regisbut" value="register" onclick="register_block()">
+
+        <div id="content" class="content hidden">
+            <div class="content-container">
+                <!-- Tabs für Game & Course -->
+                <ul class="nav nav-tabs" id="contentTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="game-tab" href="#" onclick="switchContentTabs('game')">Spiel</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="course-tab" href="#" onclick="switchContentTabs('course')">Kurse</a>
+                    </li>
+                </ul>
+
+                <div id="game">
+                    <h2 class="mt-3">Spiele</h2>
+                    <div id="game-fields">
+                        <input type="button" id="save18_hole" value="18 Loch speichern" onclick="save_inputs()">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="courseSelect">Kurs auswählen</label>
+                            <select id="courseSelect"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="course" class="hidden">
+                    <h2 class="mt-3">Kurse</h2><p>Course anzeigen, hinzufügen, bearbeiten?, (löschen?)</p>
+                    <h5>Kurs hinzufügen:</h5>
+                    <div id="container">
+                        <input type="text" id="course_name_ra" placeholder="Kursname">
+                        <input type="text" id="slope" placeholder="slope rating">
+                        <input type="text" id="course_rating" placeholder="course_rating">
+                        <input type="text" id="par" placeholder="par">
+                        <input type="button" id="save" value="save course" onclick="save_course()">
+                        <input type="button" id="close" value="schließen" onclick="close_con(this)">
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="logback">
-            <input type="button" id="logout" value="logout" onclick="logout()">
+        <div id="temp-test-buttons">
             <button onclick="window.print()">Drucken</button>
             <button onclick="sendMail()">E-Mail senden (test)</button>
+            <input type="button" id="delete_user" value="Benutzer löschen" onclick="delete_user()">
         </div>
     </div>
-    <div id="container">
-        <input type="field" id="course_name_ra" placeholder="Kursname">
-        <input type="field" id="slope" placeholder="slope rating">
-        <input type="field" id="course_rating" placeholder="course_rating">
-        <input type="field" id="par" placeholder="par">
-        <input type="button" id="save" value="save course" onclick="save_course()">
-        <input type="button" id="close" value="schließen" onclick="close_con(this)">
-    </div>
-    <div id="container2">
-        <input type="button" id="save18_hole" value="18 Loch speichern" onclick="save_inputs()">
-        <input type="button" id="closecon2" value="schließen" onclick="close_con(this)">
-        <select id="courseSelect"></select>
-    </div>
-    <div id="login"> 
-        <input type="text" id="loginuser" placeholder="E-Mail Adresse">
-        <input type="password" id="loginpass" placeholder="Password">
-        <input type="button" id="close_con3" value="schließen" onclick="close_con(this)">
-        <input type="button" id="try_login" value="login" onclick="login()">
-    </div>
-    <div id="register">
-        <input type="text" id="regisuser" placeholder="E-mail Adresse">
-        <input type="password" id="regispass" placeholder="Password">
-        <input type="button" id="close_con3" value="schließen" onclick="close_con(this)">
-        <input type="button" id="save_regis" value="Registrieren" onclick="save_regis()">
-        <input type="button" id="delete_user" value="Benutzer löschen" onclick="delete_user()">
-    </div>
+
+    <div id="notification"></div>
 </body>
 </html>

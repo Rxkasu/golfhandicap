@@ -16,46 +16,40 @@ body::before {
     z-index: -1;
 }
 
-#container {
-    margin-top: 20px;
-    width: 300px;
-    border: 3px solid black;
-    padding: 40px;
-    display: none
+#nav_div{
+    background-color: rgba(256,256,256, 30%) !important;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
 }
-#container2 {
-    margin-top: 20px;
-    width: 600px;
-    border: 3px solid black;
-    padding: 40px;
-    display: none
+
+.content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 30px;
+    padding-bottom: 30px;
 }
-#login {
-    margin-top: 20px;
-    width: 600px;
-    border: 3px solid black;
-    padding: 40px;
-    display: none
+
+.content-container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-#register {
-    margin-top: 20px;
-    width: 600px;
-    border: 3px solid black;
-    padding: 40px;
-    display: none
-}
-input{
-    margin-bottom: 5px;
-    margin-right: 5px;
-}
-#calculate{
+
+#notification {
     display: none;
-}
-#logreg{
-    width: 50%; 
-    text-align: left;
-    display: block;
-}
-#logback{
-    display: none;
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: black;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 999; /* Höher als das Login-Overlay */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Optional für bessere Sichtbarkeit */
+    opacity: 0.9; /* Leicht durchsichtig, sieht moderner aus */
 }
