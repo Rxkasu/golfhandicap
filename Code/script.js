@@ -130,7 +130,6 @@ function delete_user(){
 // saves data of an 18-hole-game in an array
 function save_inputs(){
     const course_name = document.getElementById("courseSelect").value
-    console.log("name:"+ course_name);
     if (!course_name.trim()){                                            // Check for name
         return window.alert("Bitte Kurs auswählen");
     }
@@ -138,7 +137,7 @@ function save_inputs(){
     const savedCourses = JSON.parse(localStorage.getItem("courses"));
     const course = savedCourses.find(obj => obj.course_name === course_name);
 
-    game_data = {"game_id": '',"course_name": course.course_name, "date": get_date(), "hcp_index": 0, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": course.par,
+    game_data = {"game_id": '',"course_name": course_name, "date": get_date(), "hcp_index": 0, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": '',
             "holes": [{"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
             {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
             {"hole_id": 7, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 8, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 9, "par": 0, "hcp": 0, "hits":0},
@@ -172,17 +171,23 @@ function save_inputs(){
         seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole 
     }
 
-
-
     // Add new course to user
     for (let i = 0; i < json_data.length; i++) {
         if (json_data[i].email === current_user_data.email) {
+            if (json_data[i].games.length > 0){                
+                for (let x = 0; x < json_data[i].games.length; x++){
+                    if(json_data[i].games[x].course_name === course_name){
+                        json_data[i].games.splice(x, 1)
+                    }
+            }
+            
+            }
           json_data[i].games.push(game_data);
           localStorage.setItem("data", JSON.stringify(json_data))
           break;  
         }
       }
-    console.log(JSON.stringify(json_data));
+      calculate_par()
 }
 
 //calculates total Par of Golf-course
@@ -198,7 +203,7 @@ function calculate_par(){
                         total_par = total_par + json_data[i].games[y].holes[x].par
                 }
                 json_data[i].games[y].par = total_par
-                console.log(json_data)
+                //console.log(json_data)
                 break
             }
             
@@ -206,7 +211,24 @@ function calculate_par(){
         break
         }
       }
-      
+      localStorage.setItem("data", JSON.stringify(json_data))
+}
+
+function delete_holes(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let name = document.getElementById("courseSelect").value
+    for (let x = 0; x < json_data.length; x++){
+        if (json_data[x].email === current_user_data.email){
+            console.log(json_data[x])
+            for (let y = 0; y < json_data[x].games.length; y++){
+                if (json_data[x].games[y].course_name === name){
+                    json_data[x].games.splice(y, 1)
+                    localStorage.setItem("data", JSON.stringify(json_data))
+                    break
+                }
+            }
+        }
+    }
 }
 
 // Delets a single 18-hole game
