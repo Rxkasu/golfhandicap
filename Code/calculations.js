@@ -60,7 +60,7 @@ function scoreDifferential(game) {
 
 function calculate_stableford(){
     let json_data = JSON.parse(localStorage.getItem("data"));
-    let course_name = document.getElementById("courseSelect")
+    let course_name = document.getElementById("courseSelect").value
     if (course_name == false){
         window.alert("Bitte Kurs auswählen")
         return
@@ -71,10 +71,10 @@ function calculate_stableford(){
             for (let y = 0; y < json_data[x].games.length; y++){
                 if (json_data[x].games[y].course_name === course_name){
                     for (let i = 1; i <= 18; i++) {
-                        let parInput = document.getElementById(`par${i}`);
-                        let hitsInput = document.getElementById(`hits${i}`);
-                    
+                        let parInput = document.getElementById(`par${i}`).value;
+                        let hitsInput = document.getElementById(`hits${i}`).value;
                         if (parInput > 0 && hitsInput > 0) {
+                            
                             let stable_add = hitsInput - parInput
                             if (stable_add >= 2){
                                 stable_points = stable_points + 0
@@ -108,7 +108,7 @@ function calculate_stableford(){
 // Calculates the handicap using stableford points: https://serviceportal.dgv-intranet.de/regularien/vorgabensystem/i539_1.cfm
 function calculate_old_hdc(){
     let json_data = JSON.parse(localStorage.getItem("data"));
-    let course_name = document.getElementById("courseSelect")
+    let course_name = document.getElementById("courseSelect").value
     let handicap = 0
     let stable_points = calculate_stableford()
     for (let x = 0; x < json_data.length; x++){
@@ -134,6 +134,7 @@ function calculate_old_hdc(){
                                 handicap = handicap + 0.1
                             }
                             json_data[x].games[y].hcp_index = handicap
+                            console.log(handicap)
                         }
                     }
                     else if (handicap > 4.4 && handicap <= 11.4){                                       // Handicap class 2
@@ -232,6 +233,8 @@ function calculate_old_hdc(){
                         }
                         json_data[x].games[y].hcp_index = handicap
                     }
+                    localStorage.setItem("data", JSON.stringify(json_data))
+                    console.log(json_data[x].games[y].hcp_index)
                     break
                 }
             }
