@@ -357,3 +357,7 @@ function calculate_stableford(){
         return stable_points
     }
 }
+
+function get_class(){
+    
+}
