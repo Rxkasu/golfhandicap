@@ -2,7 +2,7 @@
 function create_json(){
     //if (localStorage.getItem("data") == null){
 
-        //json_data= {"user_id": '', "sur_name": '', "first_name": '', "games": []}
+        //json_data = {"user_id": '', "sur_name": '', "first_name": '', "games": []}
         //localStorage.setItem("data", JSON.stringify(json_data))
     //}
     //else {
@@ -87,7 +87,7 @@ function register(){
     else{
         if (password !== passwordCheck) return window.alert("Passwort und Wiederholen-Passwort stimmen nicht überein"); // Check if Password is also the Check (Wiederholen)
 
-        new_user= {"email": email, "role": role, "password": password, "games": []}
+        new_user = {"email": email, "role": role, "password": password, "games": []}
         json_data.push(new_user)                                        // Append new user
         localStorage.setItem("data", JSON.stringify(json_data))         // save JSON with new user
         current_user_data = new_user;
@@ -358,6 +358,137 @@ function calculate_stableford(){
     }
 }
 
-function get_class(){
-    
+// Calculates the handicap using stableford points: https://serviceportal.dgv-intranet.de/regularien/vorgabensystem/i539_1.cfm
+function calculate_old_hdc(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let course_name = document.getElementById("courseSelect")
+    let handicap = 0
+    let stable_points = calculate_stableford()
+    for (let x = 0; x < json_data.length; x++){
+        if (json_data[x].email === current_user_data.email){                                            // Find data of current user
+            for (let y = 0; y < json_data[x].games.length; y++){
+                if (json_data[x].games[y].course_name === course_name){
+                    handicap = json_data[x].games[y].hcp_index
+                    if (handicap <= 4.4){                                        // Checks the current handicap-class
+                        if (stable_points === 36){                                                      // Handicap stays the same
+                            json_data[x].games[y].hcp_index = handicap
+                            return
+                        }
+                        else if (stable_points > 36){                                                   // Handicap gets reduced (player performed better than usual)
+                            while (stable_points >= 36){
+                                stable_points = stable_points - 1
+                                handicap = handicap - 0.1
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                        else if (stable_points < 35){                                                   // Handicap gets increased (plyer perfomed worse than usual)
+                            while (stable_points <= 36){
+                                stable_points = stable_points + 1
+                                handicap = handicap + 0.1
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                    }
+                    else if (handicap > 4.4 && handicap <= 11.4){     // Handicap class 2
+                        if (stable_points === 36){
+                            json_data[x].games[y].hcp_index = json_data[x].games[y].hcp_index
+                            return
+                        }
+                        else if (stable_points > 36){
+                            while (stable_points >= 36){
+                                stable_points = stable_points - 1
+                                handicap = handicap - 0.2
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                        else if (stable_points < 34){
+                            while (stable_points <= 36){
+                                stable_points = stable_points + 1
+                                handicap = handicap + 0.1
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                    }
+                    else if (handicap > 11.4 && handicap <= 18.4){    // Handicap class 3
+                        if (stable_points === 36){
+                            json_data[x].games[y].hcp_index = json_data[x].games[y].hcp_index
+                            return
+                        }
+                        else if (stable_points > 36){
+                            while (stable_points >= 36){
+                                stable_points = stable_points - 1
+                                handicap = handicap - 0.3
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                        else if (stable_points < 34){
+                            while (stable_points <= 36){
+                                stable_points = stable_points + 1
+                                handicap = handicap + 0.1
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                    }
+                    else if (handicap > 18.4 && handicap <= 26.4){    // Handicap class 4
+                        if (stable_points === 36){
+                            json_data[x].games[y].hcp_index = json_data[x].games[y].hcp_index
+                            return
+                        }
+                        else if (stable_points > 36){
+                            while (stable_points >= 36){
+                                stable_points = stable_points - 1
+                                handicap = handicap - 0.4
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                        else if (stable_points < 34){
+                            while (stable_points <= 36){
+                                stable_points = stable_points + 1
+                                handicap = handicap + 0.1
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                    }
+                    else if (handicap > 26.4 && handicap <= 36){      // Handicap class 5
+                        if (stable_points === 36){
+                            json_data[x].games[y].hcp_index = json_data[x].games[y].hcp_index
+                            return
+                        }
+                        else if (stable_points > 36){
+                            while (stable_points >= 36){
+                                stable_points = stable_points - 1
+                                handicap = handicap - 0.5
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                        else if (stable_points < 34){                                                   // On class 5 and upwards handicap can't increase
+                            json_data[x].games[y].hcp_index = handicap
+                            return
+                        }
+                        json_data[x].games[y].hcp_index = handicap
+                    }
+                    else if (handicap > 36 && handicap <= 54){        // Handicap class 6
+                        if (stable_points === 36){
+                            json_data[x].games[y].hcp_index = handicap
+                            return
+                        }
+                        else if (stable_points > 36){
+                            while (stable_points >= 36){
+                                stable_points = stable_points - 1
+                                handicap = handicap - 1
+                            }
+                            json_data[x].games[y].hcp_index = handicap
+                        }
+                        else if (stable_points < 34){
+                            json_data[x].games[y].hcp_index = handicap
+                            return
+                        }
+                        json_data[x].games[y].hcp_index = handicap
+                    }
+                    
+                }
+            }
+            break
+        }
+    }
 }
