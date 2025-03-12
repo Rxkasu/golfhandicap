@@ -101,8 +101,8 @@ function register(){
 // Deletes a registered user
 function delete_user(){
     let json_data = JSON.parse(localStorage.getItem("data"));
-    let email = (document.getElementById("regisuser").value) || '';
-    let password = (document.getElementById("regispass").value) || '';
+    let email = (current_user_data.email) || '';
+    let password = (current_user_data.password) || '';
     if (email == '' || password == ''){                                 // Check for inputs
         window.alert("Email und/oder Passwort leer")
     }
@@ -111,7 +111,6 @@ function delete_user(){
     if (del_user){
         if (del_user.password === password){                            // Check if Password is correct
             json_data = json_data.filter(user => user.email !== email)
-            console.log(json_data)
         }
         else{
             window.alert("Passwort ist falsch")
@@ -119,7 +118,6 @@ function delete_user(){
     }
     else{
         window.alert("user existiert nicht")
-        console.log(json_data)
     }
     localStorage.setItem("data", JSON.stringify(json_data))             // Save JSON 
 }
@@ -200,7 +198,6 @@ function calculate_par(){
                         total_par = total_par + json_data[i].games[y].holes[x].par
                 }
                 json_data[i].games[y].par = total_par
-                console.log(json_data[i].games[y])
                 break
             }
             
@@ -241,16 +238,17 @@ function load_holes(){
                         let hitsInput = document.getElementById(`hits${i}`);
                     
                         if (parInput && hcpInput && hitsInput) {
-                            parInput.value = game_data.holes[i - 1].par;
-                            hcpInput.value = game_data.holes[i - 1].hcp;
-                            hitsInput.value = game_data.holes[i - 1].hits;
+                            parInput.value = json_data[x].games[y].holes[i - 1].par;
+                            hcpInput.value = json_data[x].games[y].holes[i - 1].hcp;
+                            hitsInput.value = json_data[x].games[y].holes[i - 1].hits;
                         }
                     }
                     break
                 }
             }
+            break
         }
-        break
+        
     }
 }
 
@@ -262,7 +260,6 @@ function delete_game(){
         if (json_data[x].email === current_user_data.email) {
             for (y = 0; y < json_data[x].games.length; y++){
                 if (json_data[x].games[y].course_name === remove_game){
-                    console.log(json_data[x].games[y])
                     json_data[x].games.splice(y, 1);
                     break
                 }
@@ -270,7 +267,6 @@ function delete_game(){
         }
         
     }
-    console.log(JSON.stringify(json_data));
     localStorage.setItem("data", JSON.stringify(json_data))
 }
     
