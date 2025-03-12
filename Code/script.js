@@ -94,7 +94,6 @@ function register(){
         logged_in = true;
         notificationAlert("Registrierung erfolgreich! Jetzt kannst du dich einloggen.");
         switchAuthTabs("login");
-        showlogg()
     }
 }
 
@@ -119,7 +118,8 @@ function delete_user(){
     else{
         window.alert("user existiert nicht")
     }
-    localStorage.setItem("data", JSON.stringify(json_data))             // Save JSON 
+    localStorage.setItem("data", JSON.stringify(json_data))             // Save JSON
+    logout()
 }
 
 // saves data of an 18-hole-game in an array
@@ -309,4 +309,51 @@ function sendMail(){
         + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
         + "&body=" + encodeURIComponent(nachricht);
     window.open(mailtoLink, "_blank");
+}
+
+function calculate_stableford(){
+    let json_data = JSON.parse(localStorage.getItem("data"));
+    let course_name = document.getElementById("courseSelect")
+    if (course_name == false){
+        window.alert("Bitte Kurs auswählen")
+        return
+    }
+    let stable_points = 0
+    for (let x = 0; x < json_data.length; x++){
+        if (json_data[x].email === current_user_data.email){
+            for (let y = 0; y < json_data[x].games.length; y++){
+                if (json_data[x].games[y].course_name === course_name){
+                    for (let i = 1; i <= 18; i++) {
+                        let parInput = document.getElementById(`par${i}`);
+                        let hitsInput = document.getElementById(`hits${i}`);
+                    
+                        if (parInput > 0 && hitsInput > 0) {
+                            let stable_add = hitsInput - parInput
+                            if (stable_add >= 2){
+                                stable_points = stable_points + 0
+                            }
+                            if (stable_add === 1){
+                                stable_points = stable_points + 1
+                            }
+                            if (stable_add === 0){
+                                stable_points = stable_points + 2
+                            }
+                            if (stable_add === -1){
+                                stable_points = stable_points + 3
+                            }
+                            if (stable_add === -2){
+                                stable_points = stable_points + 4
+                            }
+                            if (stable_add <= -3){
+                                stable_points = stable_points + 5
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (stable_points >= 0){
+        return stable_points
+    }
 }
