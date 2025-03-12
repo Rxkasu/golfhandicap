@@ -1,6 +1,6 @@
 /* 🌿 Hintergrund mit Blurring */
 body {
-    background: url('/Code/Resources/background.jpg') no-repeat center center fixed;
+    background: url('Resources/background.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
