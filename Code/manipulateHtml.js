@@ -1,64 +1,174 @@
 createCourseSelect();
 generateGameFields();
+generateCourseInputFields();
 
 // Generates 18x3 input-fields for 18 holes with par, hcp and hits
 function generateGameFields() {
     let container = document.getElementById("game-fields");
     let inputs = container.querySelectorAll("input[type=text]");
     inputs.forEach(input => input.remove());
-    container.style.display = "block"
 
     // Überschrift für die Felder
     let title = document.createElement("h5");
-    title.innerText = "Loch-Daten eingeben:";
+    title.innerText = "Kurs-Daten eingeben:";
     title.className = "mt-3";
     container.appendChild(title);
 
-    // Generating fields
-    for (let i = 1; i <= 18; i++) {
-        let div = document.createElement("div");
-        div.className = "row g-2 mb-2";
+    let div = document.createElement("div");
+    div.className = "row g-2 mb-2";
+    div.style.display = 'flex';
+    div.style.flexWrap = 'wrap';
+    div.style.width = '100%';
 
-        let col1 = document.createElement("div");
-        col1.className = "col-md-4";
-        let input1 = document.createElement("input");                   // First collumn Par
-        input1.type = "text";
-        input1.className = "form-control";
-        input1.placeholder = `par - Loch ${i}`;
-        input1.id = `par${i}`
-        col1.appendChild(input1);
+    const holesPerTable = 9;
+    const totalHoles = 18 / holesPerTable;
 
-        let col2 = document.createElement("div");
-        col2.className = "col-md-4";
-        let input2 = document.createElement("input");                   // Second collumn Handycap
-        input2.type = "text";
-        input2.className = "form-control";
-        input2.placeholder = `hcp - Loch ${i}`;
-        input2.id = `hcp${i}`
-        col2.appendChild(input2);
+    for (let tableIndex = 0; tableIndex < totalHoles; tableIndex++) {
+        let tableWrapper = document.createElement("div");
+        tableWrapper.className = "col-md-6 mb-4";
 
-        let col3 = document.createElement("div");
-        col3.className = "col-md-4";
-        let input3 = document.createElement("input");                   // Third collumn needed hits
-        input3.type = "text";
-        input3.className = "form-control";
-        input3.placeholder = `hits - Loch ${i}`;
-        input3.id = `hits${i}`
-        col3.appendChild(input3);
+        let table = document.createElement("table");
+        table.className = "table text-center shadow-sm";
 
-        div.appendChild(col1);
-        div.appendChild(col2);
-        div.appendChild(col3);
+        let thead = document.createElement("thead");
+        thead.className = "table-light";
+        let headerRow = document.createElement("tr");
+        ["Loch", "HCP", "Par", "Schläge"].forEach(text => {
+            let th = document.createElement("th");
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
 
-        container.appendChild(div);
+        let tbody = document.createElement("tbody");
+        for (let i = 1; i <= holesPerTable; i++) {
+            let holeNumber = i + tableIndex * holesPerTable;
+            let row = document.createElement("tr");
+
+            let tdHole = document.createElement("td");
+            tdHole.textContent = ""+holeNumber;
+            tdHole.style.fontWeight = "bold";
+            tdHole.style.fontSize = "1.2rem";
+            row.appendChild(tdHole);
+
+            let tdHcp = document.createElement("td");
+            let inputHcp = document.createElement("input");
+            inputHcp.type = "number";
+            inputHcp.className = "form-control text-center border-secondary";
+            inputHcp.placeholder = "HCP";
+            inputHcp.id = `hcp${holeNumber}`;
+            tdHcp.appendChild(inputHcp);
+            row.appendChild(tdHcp);
+
+            let tdPar = document.createElement("td");
+            let inputPar = document.createElement("input");
+            inputPar.type = "number";
+            inputPar.className = "form-control text-center border-secondary";
+            inputPar.placeholder = "Par";
+            inputPar.id = `par${holeNumber}`;
+            tdPar.appendChild(inputPar);
+            row.appendChild(tdPar);
+
+            let tdHits = document.createElement("td");
+            let inputHits = document.createElement("input");
+            inputHits.type = "number";
+            inputHits.className = "form-control text-center border-secondary";
+            inputHits.placeholder = "Schläge";
+            inputHits.id = `hits${holeNumber}`;
+            tdHits.appendChild(inputHits);
+            row.appendChild(tdHits);
+
+            tbody.appendChild(row);
+        }
+
+        table.appendChild(tbody);
+        tableWrapper.appendChild(table);
+        div.appendChild(tableWrapper);
+
     }
+    container.appendChild(div);
 }
 
-// Closes the window of a button
-function close_con(button){
-    let container = button.parentElement;
-    container.style.display= 'none'
+function generateCourseInputFields() {
+    let container = document.getElementById("course-input-hole-fields");
+    let inputs = container.querySelectorAll("input[type=text]");
+    inputs.forEach(input => input.remove());
+
+    // Überschrift für die Felder
+    let title = document.createElement("h5");
+    title.innerText = "Kurs-Daten eingeben:";
+    title.className = "mt-3";
+    container.appendChild(title);
+
+    let div = document.createElement("div");
+    div.className = "row g-2 mb-2";
+    div.style.display = 'flex';
+    div.style.flexWrap = 'wrap';
+    div.style.width = '100%';
+
+    const holesPerTable = 9;
+    const totalHoles = 18 / holesPerTable;
+
+    for (let tableIndex = 0; tableIndex < totalHoles; tableIndex++) {
+        let tableWrapper = document.createElement("div");
+        tableWrapper.className = "col-md-6 mb-4";
+
+        let table = document.createElement("table");
+        table.className = "table text-center shadow-sm";
+
+        let thead = document.createElement("thead");
+        thead.className = "table-light";
+        let headerRow = document.createElement("tr");
+        ["Loch", "HCP", "Par"].forEach(text => {
+            let th = document.createElement("th");
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        let tbody = document.createElement("tbody");
+        for (let i = 1; i <= holesPerTable; i++) {
+            let holeNumber = i + tableIndex * holesPerTable;
+            let row = document.createElement("tr");
+
+            let tdHole = document.createElement("td");
+            tdHole.textContent = ""+holeNumber;
+            tdHole.style.fontWeight = "bold";
+            tdHole.style.fontSize = "1.2rem";
+            row.appendChild(tdHole);
+
+            let tdHcp = document.createElement("td");
+            let inputHcp = document.createElement("input");
+            inputHcp.type = "number";
+            inputHcp.className = "form-control text-center border-secondary";
+            inputHcp.placeholder = "HCP";
+            inputHcp.id = `chcp${holeNumber}`;
+            tdHcp.appendChild(inputHcp);
+            row.appendChild(tdHcp);
+
+            let tdPar = document.createElement("td");
+            let inputPar = document.createElement("input");
+            inputPar.type = "number";
+            inputPar.className = "form-control text-center border-secondary";
+            inputPar.placeholder = "Par";
+            inputPar.id = `cpar${holeNumber}`;
+            tdPar.appendChild(inputPar);
+            row.appendChild(tdPar);
+
+            tbody.appendChild(row);
+        }
+
+        table.appendChild(tbody);
+        tableWrapper.appendChild(table);
+        div.appendChild(tableWrapper);
+
+    }
+    container.appendChild(div);
+
 }
+
 
 function createCourseSelect() {
     const dropdown = document.getElementById("courseSelect");

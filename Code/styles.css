@@ -40,6 +40,14 @@ body::before {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+.btn-golf {
+    background-color: #217a43;
+    color: white;
+    border-radius: 50px;
+    padding: 10px 20px;
+    transition: 0.3s;
+}
+
 #notification {
     display: none;
     position: fixed;

@@ -23,14 +23,14 @@ function get_date(){
 
 // Logs in user if user exists and password fits username
 function login(){
-    let json_data = JSON.parse(localStorage.getItem("data"));
+    let json_data = JSON.parse(localStorage.getItem("data")) || null;
     let email = (document.getElementById("loginEmail").value);
     let password = (document.getElementById("loginPass").value);
 
     if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Check for inputs
     if (!password || !password.trim()) return window.alert("Passwort-Feld ist leer");
 
-    let log_user = json_data.find(user => user.email === email)
+    let log_user = json_data.find(user => user.email === email) || null;
 
     if (log_user){                                                      // Check if user exists
         if (log_user.password === password){                            // Check if Password is correct
@@ -256,7 +256,7 @@ function load_holes(){
 // Delets a single course game
 function delete_game(){
     let json_data = JSON.parse(localStorage.getItem("data"));
-    let remove_game = document.getElementById("course_name_ra").value
+    let remove_game = document.getElementById("course_name").value
     for (x = 0; x < json_data.length; x++){
         if (json_data[x].email === current_user_data.email) {
             for (y = 0; y < json_data[x].games.length; y++){
@@ -273,13 +273,13 @@ function delete_game(){
     
 // Makes container for a new course visible
 function new_course(){
-    let container = document.getElementById("container");
+    let container = document.getElementById("course-input-fields");
     container.style.display = "block"
 }
 
 function save_course(){
     const course = {
-        course_name: document.getElementById("course_name_ra").value,
+        course_name: document.getElementById("course_name").value,
         course_rating: document.getElementById("course_rating").value,
         slope_rating: document.getElementById("slope").value,
         //par: document.getElementById("par").value
