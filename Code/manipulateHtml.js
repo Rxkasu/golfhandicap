@@ -211,15 +211,30 @@ function hideAuthModal() {
 function switchContentTabs(type) {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("course").classList.add("hidden");
+    document.getElementById("stats").classList.add("hidden");
+    document.getElementById("secretary").classList.add("hidden");
+    document.getElementById("gameLeader").classList.add("hidden");
     document.getElementById("game-tab").classList.remove("active");
     document.getElementById("course-tab").classList.remove("active");
+    document.getElementById("stats-tab").classList.remove("active");
+    document.getElementById("secretary-tab").classList.remove("active");
+    document.getElementById("gameLeader-tab").classList.remove("active");
 
     if (type === "game") {
         document.getElementById("game").classList.remove("hidden");
         document.getElementById("game-tab").classList.add("active");
-    } else {
+    } else if (type === "course") {
         document.getElementById("course").classList.remove("hidden");
         document.getElementById("course-tab").classList.add("active");
+    } else if (type === "stats") {
+        document.getElementById("stats").classList.remove("hidden");
+        document.getElementById("stats-tab").classList.add("active");
+    } else if (type === "secretary") {
+        document.getElementById("secretary").classList.remove("hidden");
+        document.getElementById("secretary-tab").classList.add("active");
+    } else {
+        document.getElementById("gameLeader").classList.remove("hidden");
+        document.getElementById("gameLeader-tab").classList.add("active");
     }
 }
 

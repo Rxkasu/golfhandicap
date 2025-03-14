@@ -89,10 +89,19 @@
                 <!-- Tabs für Game & Course -->
                 <ul class="nav nav-tabs" id="contentTabs">
                     <li class="nav-item">
-                        <a class="nav-link active" id="game-tab" href="#" onclick="switchContentTabs('game')">Spiel</a>
+                        <a class="nav-link active" id="game-tab" href="#" onclick="switchContentTabs('game')">Spiele</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="course-tab" href="#" onclick="switchContentTabs('course')">Kurse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="stats-tab" href="#" onclick="switchContentTabs('stats')">Statistiken</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="secretary-tab" href="#" onclick="switchContentTabs('secretary')">Sekretär</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="gameLeader-tab" href="#" onclick="switchContentTabs('gameLeader')">Spielleiter</a>
                     </li>
                 </ul>
 
@@ -133,6 +142,24 @@
                     </div>
                     <div id="course-input-hole-fields"></div>
                     <input type="button" class="btn btn-success" id="save_course" value="Kurs speichern" onclick="save_course()">
+                </div>
+
+                <div id="stats" class="hidden">
+                    <h2 class="mt-3">Statistiken</h2>
+
+
+                </div>
+
+                <div id="secretary" class="hidden">
+                    <h2 class="mt-3">Sekretär-Arbeitsbereich: Alle User etc...</h2>
+
+
+                </div>
+
+                <div id="gameLeader" class="hidden">
+                    <h2 class="mt-3">Spielleiter</h2>
+
+
                 </div>
             </div>
         </div>
