@@ -1,16 +1,3 @@
-function course_hdc(){
-    let json_data = JSON.parse(localStorage.getItem("data"));
-    let slope_rating = ''
-    let course_rating = ''
-    for (let i = 0; i < json_data.length; i++) {
-        if (json_data[i].email === current_user_data.email) {
-            slope_rating = json_data[i].slope_rating
-            course_rating = json_data[i].course_rating
-            break
-        }
-    }
-    let course_hdc = hdc_in * slope_rating/113 +course_rating - par
-}
 
 function whci() {
     const games = current_user_data.games;
@@ -44,7 +31,7 @@ function whci() {
     }
 }
 
-function getScoreDifferentials(games) {
+export function getScoreDifferentials(games) {
     const scoreDifferentials = [];
     games.forEach((game) => {
         scoreDifferentials.push(scoreDifferential(game));
@@ -52,65 +39,77 @@ function getScoreDifferentials(games) {
     return scoreDifferentials.sort((a, b) => a - b);
 }
 
-function scoreDifferential(game) {
-    //const game = current_user_data.games[gameId];
-    const allhits = holes.reduce((acc, hole) => acc + hole.hits, 0);
-    return ((allhits - game.course_rating) * 113/game.slope_rating).toFixed(1);
-}
 
-function calculate_stableford(){
-    let json_data = JSON.parse(localStorage.getItem("data"));
-    let course_name = document.getElementById("courseSelect").value
-    if (course_name == false){
-        window.alert("Bitte Kurs auswählen")
-        return
-    }
-    let stable_points = 0
-    for (let x = 0; x < json_data.length; x++){
-        if (json_data[x].email === current_user_data.email){
-            for (let y = 0; y < json_data[x].games.length; y++){
-                if (json_data[x].games[y].course_name === course_name){
-                    for (let i = 1; i <= 18; i++) {
-                        let parInput = document.getElementById(`par${i}`).value;
-                        let hitsInput = document.getElementById(`hits${i}`).value;
-                        if (parInput > 0 && hitsInput > 0) {
-                            
-                            let stable_add = hitsInput - parInput
-                            if (stable_add >= 2){
-                                stable_points = stable_points + 0
-                            }
-                            if (stable_add === 1){
-                                stable_points = stable_points + 1
-                            }
-                            if (stable_add === 0){
-                                stable_points = stable_points + 2
-                            }
-                            if (stable_add === -1){
-                                stable_points = stable_points + 3
-                            }
-                            if (stable_add === -2){
-                                stable_points = stable_points + 4
-                            }
-                            if (stable_add <= -3){
-                                stable_points = stable_points + 5
-                            }
-                        }
-                    }
-                }
-            }
+export function scoreDifferential(game) {
+
+
+    let courseHdc = calcCourseHdc(game);
+
+    let roundedCourseHdc = Math.round(courseHdc);
+    let div = Math.floor(roundedCourseHdc / game.holes.length);
+    let mod = roundedCourseHdc % game.holes.length;
+
+    let grossHits = 0;
+
+    
+
+    for(let i = 0; i < game.holes.length; i++) {
+        let hole = game.holes[i];
+        if(hole.hcp <= mod) {
+            grossHits += Math.min(hole.hits, hole.par + 2 + div + 1);
+        } else {
+            grossHits += Math.min(hole.hits, hole.par + 2 + div);
         }
     }
-    if (stable_points >= 0){
-        return stable_points
+
+    let otherNine = game.holes.length === 9 ? (Math.abs(game.hcp_index) * 1.04 + 2.4) / 2 : 0;
+
+    return Math.round(((grossHits - game.course_rating) * 113 / game.slope_rating + otherNine) * 10) / 10;
+}
+
+export function calcCourseHdc(game) {
+    return Math.abs(game.hcp_index) * game.slope_rating / 113 + game.course_rating - (game.holes.reduce((acc, hole) => acc + hole.par, 0));
+}
+
+export function calcStablefordPoints(par, hits) {
+    if (hits <= 0) {
+        throw new Error("Hits must be greater than 0");
+    } else if(par <= 0) {
+        throw new Error("Par must be greater than 0");
     }
+    return Math.max(par - hits + 2, 0);
+}
+
+export function calculate_stableford(game){
+
+    let stable_points = 0
+
+    for (let i = 0; i < 18; i++) {
+        let parInput = game[i].par;
+        let hitsInput = game[i].hits;
+        stable_points += calcStablefordPoints(parInput, hitsInput);
+    }
+    return stable_points;
 }
 
 // Calculates the handicap using stableford points: https://serviceportal.dgv-intranet.de/regularien/vorgabensystem/i539_1.cfm
 function calculate_old_hdc(){
     let json_data = JSON.parse(localStorage.getItem("data"));
     let course_name = document.getElementById("courseSelect").value
+    if (course_name == false){
+        window.alert("Bitte Kurs auswählen")
+        return
+    }
     let handicap = 0
-    let stable_points = calculate_stableford()
+    let game = [];
+    for (let i = 1; i <= 18; i++) {
+        let parInput = document.getElementById(`par${i}`).value;
+        let hitsInput = document.getElementById(`hits${i}`).value;
+        game.push({par: parInput, hits: hitsInput}); 
+    }
+
+    let stable_points = calculate_stableford(game);
+
     for (let x = 0; x < json_data.length; x++){
         if (json_data[x].email === current_user_data.email){                                            // Find data of current user
             for (let y = 0; y < json_data[x].games.length; y++){
@@ -242,3 +241,4 @@ function calculate_old_hdc(){
         }
     }
 }
+

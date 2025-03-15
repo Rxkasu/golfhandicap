@@ -243,7 +243,7 @@
             "game_id": 3,
             "course_name": "Humbertus Alley Golf Club 18-hole",
             "date": "2019/04/03",
-            "hcp_index": -54,
+            "hcp_index": -32.5,
             "course_rating": 72.3,
             "slope_rating": 130,
             "holes": [
@@ -959,7 +959,7 @@
         },
         {
             "game_id": 10,
-            "course_name": "Uber Pleb Golf Club 18-hole",
+            "course_name": "Uber Pleb Golf Club 9-hole",
             "date": "2022/04/03",
             "hcp_index": 25.6,
             "course_rating": 35.7,
@@ -1023,7 +1023,7 @@
         }, 
         {
             "game_id": 11,
-            "course_name": "Uber Pleb Golf Club 18-hole",
+            "course_name": "Uber Pleb Golf Club 9-hole",
             "date": "2022/04/04",
             "hcp_index": 23.9,
             "course_rating": 35.7,
@@ -1089,7 +1089,7 @@
             "game_id": 12,
             "course_name": "Uber Pleb Golf Club 18-hole",
             "date": "2022/04/05",
-            "hcp_index": 23.9,
+            "hcp_index": 23.5,
             "course_rating": 72.3,
             "slope_rating": 130,
             "holes": [
