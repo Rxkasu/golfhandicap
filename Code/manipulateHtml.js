@@ -57,6 +57,7 @@ function generateGameFields() {
             inputHcp.type = "number";
             inputHcp.className = "form-control text-center border-secondary";
             inputHcp.placeholder = "HCP";
+            inputHcp.disabled = true;
             inputHcp.id = `hcp${holeNumber}`;
             tdHcp.appendChild(inputHcp);
             row.appendChild(tdHcp);
@@ -66,6 +67,7 @@ function generateGameFields() {
             inputPar.type = "number";
             inputPar.className = "form-control text-center border-secondary";
             inputPar.placeholder = "Par";
+            inputPar.disabled = true;
             inputPar.id = `par${holeNumber}`;
             tdPar.appendChild(inputPar);
             row.appendChild(tdPar);
@@ -182,7 +184,7 @@ function createCourseSelect() {
         option.textContent = course.course_name;
         dropdown.appendChild(option);
     });
-    dropdown.onchange = load_holes;
+    dropdown.onchange = load_course_holes;
 }
 
 function switchAuthTabs(type) {

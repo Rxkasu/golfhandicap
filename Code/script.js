@@ -16,11 +16,10 @@ function create_json(){
 // Gets actual Date in Day/Month/Year-format
 function get_date(){
     let today = new Date();
-    let day = (today.getDate().toString().padStart(2, '0'))
-    let month = ((today.getMonth() + 1).toString().padStart(2, '0'))
-    let year = today.getFullYear()
-    let date = `${day}/${month}/${year}`
-    return date
+    let day = (today.getDate().toString().padStart(2, '0'));
+    let month = ((today.getMonth() + 1).toString().padStart(2, '0'));
+    let year = today.getFullYear();
+    return `${day}/${month}/${year}`;
 }
 
 // Logs in user if user exists and password fits username
@@ -134,9 +133,10 @@ function save_inputs(){
             ]}
     let json_data = JSON.parse(localStorage.getItem("data"));
     for (let i = 1; i <= 18; i++) {
-        let par = document.getElementById(`par${i}`).value || 0;
-        let hcp = document.getElementById(`hcp${i}`).value || 0;
-        let hits = document.getElementById(`hits${i}`).value || 0;
+        let par = document.getElementById(`par${i}`).value || null; //duplicated? what if course update feature will get implemented?
+        let hcp = document.getElementById(`hcp${i}`).value || null; //duplicated? what if course update feature will get implemented?
+        let hits = document.getElementById(`hits${i}`).value || null;
+        if (hits == null) return window.alert("Schläge Eingabefeld " + i + " darf nicht leer sein");
 
         // Set values in JSON-object
         game_data.holes[i - 1].par = par ? parseInt(par) : 0;
@@ -144,35 +144,13 @@ function save_inputs(){
         game_data.holes[i - 1].hits = hits ? parseInt(hits) : 0;
     }
 
-    // Check for duplicates
-    let seenHcps = new Map(); 
-
-    for (let hole of game_data.holes) {
-        let hcp = hole.hcp;
-        
-        if (seenHcps.has(hcp)) {
-            let firstHoleId = seenHcps.get(hcp);                        // First hole with same hcp
-            window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}`);
-            return 
-        }
-        
-        seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole 
-    }
 
     // Add new course to user
     for (let i = 0; i < json_data.length; i++) {
         if (json_data[i].email === current_user_data.email) {
-            if (json_data[i].games.length > 0) {
-                for (let x = 0; x < json_data[i].games.length; x++) {
-                    if(json_data[i].games[x].course_name === course_name) {
-                        json_data[i].games.splice(x, 1);
-                    }
-                }
-            
-            }
           json_data[i].games.push(game_data);
-          localStorage.setItem("data", JSON.stringify(json_data))
-          break;  
+          localStorage.setItem("data", JSON.stringify(json_data));
+          break;
         }
     }
     calculate_par()
@@ -220,6 +198,26 @@ function delete_holes(){
     }
 }
 
+function load_course_holes(){
+    let courses = JSON.parse(localStorage.getItem("courses"));
+    let name = document.getElementById("courseSelect").value;
+    for (let x = 0; x < courses.length; x++){
+        if (courses[x].course_name === name){
+
+            for (let i = 1; i <= 18; i++) {
+                let parInput = document.getElementById(`par${i}`);
+                let hcpInput = document.getElementById(`hcp${i}`);
+
+                if (parInput && hcpInput) {
+                    parInput.value = courses[x].holes[i - 1].par;
+                    hcpInput.value = courses[x].holes[i - 1].hcp;
+                }
+            }
+            break
+        }
+    }
+}
+
 function load_holes(){
     let json_data = JSON.parse(localStorage.getItem("data"));
     console.log(json_data)
@@ -232,7 +230,7 @@ function load_holes(){
                         let parInput = document.getElementById(`par${i}`);
                         let hcpInput = document.getElementById(`hcp${i}`);
                         let hitsInput = document.getElementById(`hits${i}`);
-                    
+
                         if (parInput && hcpInput && hitsInput) {
                             parInput.value = json_data[x].games[y].holes[i - 1].par;
                             hcpInput.value = json_data[x].games[y].holes[i - 1].hcp;
@@ -244,7 +242,7 @@ function load_holes(){
             }
             break
         }
-        
+
     }
 }
 
@@ -276,13 +274,42 @@ function save_course(){
     const course = {
         course_name: document.getElementById("course_name").value,
         course_rating: document.getElementById("course_rating").value,
-        slope_rating: document.getElementById("course_slope").value,
+        slope_rating: document.getElementById("course_slope").value
     };
 
     const emptyValue = Object.keys(course).find(key => !course[key].trim()) || null;
     if (emptyValue) {
         return window.alert(emptyValue + " darf nicht leer sein");
     }
+
+    const holes = [];
+    for (let i = 1; i <= 18; i++) {
+        let par = document.getElementById(`cpar${i}`).value || null;
+        let hcp = document.getElementById(`chcp${i}`).value || null;
+        if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein");
+        if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein");
+
+        holes.push({
+            hole_id: i,
+            par: parseInt(par) || 0,
+            hcp: parseInt(hcp) || 0
+        });
+    }
+
+    // Check for duplicates
+    const seenHcps = new Map();
+
+    for (let hole of holes) {
+        let hcp = hole.hcp;
+
+        if (seenHcps.has(hcp)) {
+            let firstHoleId = seenHcps.get(hcp);                        // First hole with same hcp
+            return window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}`);
+        }
+
+        seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole
+    }
+    course.holes = holes;
 
     const savedCourses = JSON.parse(localStorage.getItem("courses")) || [];
 
