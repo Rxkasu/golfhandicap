@@ -1,6 +1,7 @@
 createCourseSelect();
 generateGameFields();
 generateCourseInputFields();
+showPrintScorecardInputs();
 
 // Generates 18x3 input-fields for 18 holes with par, hcp and hits
 function generateGameFields() {
@@ -120,12 +121,6 @@ function generateCourseInputFields() {
     let inputs = container.querySelectorAll("input[type=text]");
     inputs.forEach(input => input.remove());
 
-    // Überschrift für die Felder
-    let title = document.createElement("h5");
-    title.innerText = "Kurs-Daten eingeben:";
-    title.className = "mt-3";
-    container.appendChild(title);
-
     let div = document.createElement("div");
     div.className = "row g-2 mb-2";
     div.style.display = 'flex';
@@ -208,6 +203,22 @@ function createCourseSelect() {
         dropdown.appendChild(option);
     });
     dropdown.onchange = load_course_holes;
+    createEditCourseSelect();
+}
+
+function createEditCourseSelect() {
+    const dropdown = document.getElementById("edit_course_select");
+
+    dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
+
+    let savedCourses = JSON.parse(localStorage.getItem("courses")) || ["No course"];
+    savedCourses.forEach(course => {
+        const option = document.createElement("option");
+        option.value = course.course_name;
+        option.textContent = course.course_name;
+        dropdown.appendChild(option);
+    });
+    dropdown.onchange = load_edit_course_holes;
 }
 
 function switchAuthTabs(type) {
@@ -237,12 +248,12 @@ function switchContentTabs(type) {
     document.getElementById("game").classList.add("hidden");
     document.getElementById("course").classList.add("hidden");
     document.getElementById("stats").classList.add("hidden");
-    document.getElementById("secretary").classList.add("hidden");
+    document.getElementById("scorecard").classList.add("hidden");
     document.getElementById("gameLeader").classList.add("hidden");
     document.getElementById("game-tab").classList.remove("active");
     document.getElementById("course-tab").classList.remove("active");
     document.getElementById("stats-tab").classList.remove("active");
-    document.getElementById("secretary-tab").classList.remove("active");
+    document.getElementById("scorecard-tab").classList.remove("active");
     document.getElementById("gameLeader-tab").classList.remove("active");
 
     if (type === "game") {
@@ -254,9 +265,9 @@ function switchContentTabs(type) {
     } else if (type === "stats") {
         document.getElementById("stats").classList.remove("hidden");
         document.getElementById("stats-tab").classList.add("active");
-    } else if (type === "secretary") {
-        document.getElementById("secretary").classList.remove("hidden");
-        document.getElementById("secretary-tab").classList.add("active");
+    } else if (type === "scorecard") {
+        document.getElementById("scorecard").classList.remove("hidden");
+        document.getElementById("scorecard-tab").classList.add("active");
     } else {
         document.getElementById("gameLeader").classList.remove("hidden");
         document.getElementById("gameLeader-tab").classList.add("active");
@@ -285,4 +296,103 @@ function notificationAlert(message) {
     notification.innerText = message;
     notification.style.display = "block";
     setTimeout(() => notification.style.display = "none", 3000); // Nach 3 Sek. ausblenden
+}
+
+function showPrintScorecardInputs() {
+    let courseRadiosContainer = document.getElementById('course-radios');
+    courseRadiosContainer.innerHTML = '';
+    let userRadiosContainer = document.getElementById('user-radios');
+    let printButton = document.getElementById('print-scorecard');
+
+    // Radio-Buttons für Kurse hinzufügen
+    let courses = JSON.parse(localStorage.getItem('courses')) || [];
+    if (courses.length < 0) {
+        courseRadiosContainer.innerHTML = '<p>Keine Kurse vorhanden</p>';
+    } else {
+        courses.forEach(course => {
+            const radioButton = document.createElement('div');
+            radioButton.classList.add('form-check');
+    
+            radioButton.innerHTML = `
+                <input class="form-check-input" type="radio" name="course" value="${course.course_name}">
+                <label class="form-check-label" for="${course.id}">
+                    ${course.course_name}
+                </label>
+            `;
+            courseRadiosContainer.appendChild(radioButton);
+        });
+    }
+    
+    // Radio-Buttons für User hinzufügen
+    let data = JSON.parse(localStorage.getItem('data')) || [];
+    if (data.length < 0) {
+        userRadiosContainer.innerHTML = '<p>Keine Spieler vorhanden</p>';
+    } else {
+        data.forEach(data => {
+            if (data.role === 'Golfer') {
+                const radioButton = document.createElement('div');
+                radioButton.classList.add('form-check');
+                radioButton.innerHTML = `
+                <input class="form-check-input" type="radio" name="user" value="${data.email}">
+                <label class="form-check-label" for="${data.email}">
+                    ${data.email}
+                </label>
+                `;
+                userRadiosContainer.appendChild(radioButton);
+            }
+        });
+    }
+
+    // Event Listener für Kurs- und Benutzer-Auswahl
+    const courseRadios = document.getElementsByName('course');
+    const userRadios = document.getElementsByName('user');
+
+    courseRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            checkSelections(courseRadios, userRadios, printButton);
+        });
+    });
+
+    userRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            checkSelections(courseRadios, userRadios, printButton);
+        });
+    });
+}
+
+// Funktion, um zu überprüfen, ob sowohl Kurs als auch Benutzer ausgewählt sind bei Scorecard-Druck, um Button zu disabeln
+function checkSelections(courseRadios, userRadios, printButton) {
+    const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
+    const selectedUser = Array.from(userRadios).find(radio => radio.checked);
+
+    if (selectedCourse && selectedUser) {
+        printButton.disabled = false; // Button aktivieren
+    } else {
+        printButton.disabled = true; // Button deaktivieren
+    }
+}
+
+function showEditCourse() {
+    document.getElementById("course_title").innerHTML = "Kurs bearbeiten";
+    document.getElementById("course_name").classList.add("hidden");
+    document.getElementById("edit_course_select").classList.remove("hidden");
+    document.getElementById("course_name_label").classList.add("hidden");
+    document.getElementById("edit_course_select_label").classList.remove("hidden");
+    document.getElementById("edit_course_button").classList.add("hidden");
+    document.getElementById("cancel_edit_course").classList.remove("hidden");
+    document.getElementById("save_course").classList.add("hidden");
+    document.getElementById("save_edit_course").classList.remove("hidden");
+}
+
+function cancelEditCourse() {
+    document.getElementById("course_title").innerHTML = "Kurs bearbeiten";
+    document.getElementById("course_name").classList.remove("hidden");
+    document.getElementById("edit_course_select").classList.add("hidden");
+    document.getElementById("course_name_label").classList.remove("hidden");
+    document.getElementById("edit_course_select_label").classList.add("hidden");
+    document.getElementById("edit_course_button").classList.remove("hidden");
+    document.getElementById("cancel_edit_course").classList.add("hidden");
+    document.getElementById("save_course").classList.remove("hidden");
+    document.getElementById("save_edit_course").classList.add("hidden");
+    clearCourseFields();
 }

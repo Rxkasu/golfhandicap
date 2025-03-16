@@ -14,6 +14,9 @@
     <script src="script.js" defer></script>
     <script src="manipulateHtml.js" defer></script>
     <script src="calculations.js" defer></script>
+    <script src="generateScorecard.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js" defer></script>
 </head>
 <body>
     <div id="main_div">
@@ -98,7 +101,7 @@
                         <a class="nav-link" id="stats-tab" href="#" onclick="switchContentTabs('stats')">Statistiken</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="secretary-tab" href="#" onclick="switchContentTabs('secretary')">Sekretär</a>
+                        <a class="nav-link" id="scorecard-tab" href="#" onclick="switchContentTabs('scorecard')">Scorecard</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="gameLeader-tab" href="#" onclick="switchContentTabs('gameLeader')">Spielleiter</a>
@@ -120,16 +123,18 @@
                     <div id="game-fields"></div>
                     <input type="button" id="save18_hole" class="btn btn-success" value="Spiel speichern" onclick="save_inputs()">
                     <input type="button" id="calc" class="btn btn-primary" style="margin-left: 1%" value="Handicap berechnen" onclick="calculate_old_hdc()">
-                    <input type="button" id="clear_game_fields" class="btn btn-warning" style="float: right" value="Eingabefelder leeren" onclick="clearGameFields()">
+                    <input type="button" id="clear_game_fields" class="btn btn-danger" style="float: right" value="Eingabefelder leeren" onclick="clearGameFields()">
                 </div>
 
                 <div id="course" class="hidden">
                     <h2 class="mt-3">Kurse</h2>
-                    <h5>Kurs hinzufügen:</h5>
-                    <div id="course-input-fields" class="mb-3" style="display: flex">
+                    <h5 id="course_title">Kurs hinzufügen:</h5>
+                    <div id="course-input-fields" class="mb-3 d-flex">
                         <div class="form-floating mb-3" style="margin-right: 2.5%">
                             <input id="course_name" type="text" class="form-control w-auto" placeholder="" required>
-                            <label class="form-label" for="course_name">Kursname</label>
+                            <label class="form-label" for="course_name" id="course_name_label">Kursname</label>
+                            <select id="edit_course_select" class="form-select mb-3 w-auto hidden"></select>
+                            <label class="form-label hidden" for="edit_course_select" id="edit_course_select_label">Kurs wählen</label>
                         </div>
                         <div class="form-floating mb-3" style="margin-right: 2.5%">
                             <input id="course_slope" type="number" class="form-control w-auto" placeholder="" required>
@@ -143,7 +148,10 @@
 
                     <div id="course-input-hole-fields"></div>
                     <input type="button" class="btn btn-success" id="save_course" value="Kurs speichern" onclick="save_course()">
-                    <input type="button" id="clear_course_fields" class="btn btn-warning" style="float: right" value="Eingabefelder leeren" onclick="clearCourseFields()">
+                    <input type="button" id="clear_course_fields" class="btn btn-danger" style="float: right" value="Eingabefelder leeren" onclick="clearCourseFields()">
+                    <input type="button" class="btn btn-success hidden" id="save_edit_course" value="Bearbeitung speichern" onclick="saveEditCourse()">
+                    <input type="button" class="btn btn-warning" id="edit_course_button" value="Kurse bearbeiten" onclick="showEditCourse()">
+                    <input type="button" class="btn btn-danger hidden" id="cancel_edit_course" value="Bearbeiten abbrechen" onclick="cancelEditCourse()">
                 </div>
 
                 <div id="stats" class="hidden">
@@ -152,14 +160,19 @@
 
                 </div>
 
-                <div id="secretary" class="hidden">
-                    <h2 class="mt-3">Sekretär-Arbeitsbereich: Alle User etc...</h2>
-                    <div id="temp-test-buttons">
-                        <button onclick="window.print()">Drucken</button>
-                        <input type="button" id="delete_user" value="Benutzer löschen" onclick="delete_user()">
+                <div id="scorecard" class="hidden">
+                    <h2 class="mt-3">Scorecard drucken</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mt-3">Wähle einen Kurs:</h5>
+                            <div id="course-radios"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="mt-3">Wähle einen Benutzer:</h5>
+                            <div id="user-radios"></div>
+                        </div>
                     </div>
-
-
+                    <button class="btn btn-success mt-3" id="print-scorecard" disabled>Scorecard drucken</button>
                 </div>
 
                 <div id="gameLeader" class="hidden">

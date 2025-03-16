@@ -85,31 +85,7 @@ function register(){
         switchAuthTabs("login");
         document.getElementById("loginEmail").value = email;
     }
-}
-
-// Deletes a registered user
-function delete_user(){
-    let json_data = JSON.parse(localStorage.getItem("data"));
-    let email = (current_user_data.email) || '';
-    let password = (current_user_data.password) || '';
-    if (email == '' || password == ''){                                 // Check for inputs
-        window.alert("Email und/oder Passwort leer")
-    }
-
-    let del_user = json_data.find(user => user.email === email)
-    if (del_user){
-        if (del_user.password === password){                            // Check if Password is correct
-            json_data = json_data.filter(user => user.email !== email)
-        }
-        else{
-            window.alert("Passwort ist falsch")
-        }
-    }
-    else{
-        window.alert("user existiert nicht")
-    }
-    localStorage.setItem("data", JSON.stringify(json_data))             // Save JSON
-    logout()
+    showPrintScorecardInputs();
 }
 
 // saves data of an 18-hole-game in an array
@@ -207,6 +183,29 @@ function load_course_holes(){
             for (let i = 1; i <= 18; i++) {
                 let parInput = document.getElementById(`par${i}`);
                 let hcpInput = document.getElementById(`hcp${i}`);
+
+                if (parInput && hcpInput) {
+                    parInput.value = courses[x].holes[i - 1].par;
+                    hcpInput.value = courses[x].holes[i - 1].hcp;
+                }
+            }
+            break
+        }
+    }
+}
+
+function load_edit_course_holes(){
+    let courses = JSON.parse(localStorage.getItem("courses"));
+    let name = document.getElementById("edit_course_select").value;
+    for (let x = 0; x < courses.length; x++){
+        if (courses[x].course_name === name){
+
+            document.getElementById("course_rating").value = courses[x].course_rating;
+            document.getElementById("course_slope").value = courses[x].slope_rating;
+
+            for (let i = 1; i <= 18; i++) {
+                let parInput = document.getElementById(`cpar${i}`);
+                let hcpInput = document.getElementById(`chcp${i}`);
 
                 if (parInput && hcpInput) {
                     parInput.value = courses[x].holes[i - 1].par;
@@ -321,7 +320,70 @@ function save_course(){
     savedCourses.push(course);
 
     localStorage.setItem("courses", JSON.stringify(savedCourses));
+    notificationAlert("Kurs erfolgreich erstellt");
     createCourseSelect();
+    showPrintScorecardInputs();
+}
+
+function saveEditCourse() {
+    const course = {
+        course_name: document.getElementById("edit_course_select").value,
+        course_rating: document.getElementById("course_rating").value,
+        slope_rating: document.getElementById("course_slope").value
+    };
+
+    const emptyValue = Object.keys(course).find(key => !course[key].trim()) || null;
+    if (emptyValue) {
+        return window.alert(emptyValue + " darf nicht leer sein");
+    }
+
+    const holes = [];
+    for (let i = 1; i <= 18; i++) {
+        let par = document.getElementById(`cpar${i}`).value || null;
+        let hcp = document.getElementById(`chcp${i}`).value || null;
+        if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein");
+        if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein");
+
+        holes.push({
+            hole_id: i,
+            par: parseInt(par) || 0,
+            hcp: parseInt(hcp) || 0
+        });
+    }
+
+    // Check for duplicates
+    const seenHcps = new Map();
+
+    for (let hole of holes) {
+        let hcp = hole.hcp;
+
+        if (seenHcps.has(hcp)) {
+            let firstHoleId = seenHcps.get(hcp);                        // First hole with same hcp
+            return window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}`);
+        }
+
+        seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole
+    }
+    course.holes = holes;
+
+    const savedCourses = JSON.parse(localStorage.getItem("courses")) || [];
+
+    const courseNameDuplicate = savedCourses.find(obj => obj.course_name === course.course_name) || null;
+    if (courseNameDuplicate) {
+        // Wenn der Kursname schon existiert, ersetze die Daten
+        const index = savedCourses.findIndex(obj => obj.course_name === course.course_name);
+        if (index !== -1) {
+            // Ersetze die Kursdaten an diesem Index
+            savedCourses[index] = course;
+        }
+    } else {
+        savedCourses.push(course);
+    }   
+    localStorage.setItem("courses", JSON.stringify(savedCourses));
+    notificationAlert("Kurs erfolgreich bearbeitet");
+    cancelEditCourse();
+    createCourseSelect();
+    showPrintScorecardInputs();
 }
 
 function sendMail(user){
