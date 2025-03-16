@@ -92,6 +92,29 @@ function generateGameFields() {
     container.appendChild(div);
 }
 
+function clearGameFields() {
+    createCourseSelect();
+    document.getElementById("currentHci").value = "";
+
+    for (let i = 1; i <= 18; i++) {
+        document.getElementById(`par${i}`).value = "";
+        document.getElementById(`hcp${i}`).value = "";
+        document.getElementById(`hits${i}`).value = "";
+    }
+}
+
+function clearCourseFields() {
+    createCourseSelect();
+    document.getElementById("course_name").value = "";
+    document.getElementById("course_slope").value = "";
+    document.getElementById("course_rating").value = "";
+
+    for (let i = 1; i <= 18; i++) {
+        document.getElementById(`cpar${i}`).value = "";
+        document.getElementById(`chcp${i}`).value = "";
+    }
+}
+
 function generateCourseInputFields() {
     let container = document.getElementById("course-input-hole-fields");
     let inputs = container.querySelectorAll("input[type=text]");

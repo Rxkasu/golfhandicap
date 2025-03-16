@@ -63,7 +63,7 @@
                             <select class="form-select mb-3" id="regisRole">
                                 <option value="Golfer">Golfer</option>
                                 <option value="Sekretär">Sekretär</option>
-                                <option value="Spielführer">Spielführer</option>
+                                <option value="Spielführer">Spielleiter</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -113,14 +113,14 @@
                             <select id="courseSelect" class="form-select mb-3 w-auto"></select>
                         </div>
                         <div style="margin-left: 2.5%">
-                            <label class="form-label" for="currentHci" title="Nur relevant, wenn du Golf-HCC nicht nutzt, aber ein Handicap hast.">Aktuelles Handicap 🛈</label>
+                            <label class="form-label" for="currentHci" title="Nur relevant, wenn du Golf-HCC nicht nutzt, aber bereits ein Handicap hast.">Aktuelles Handicap 🛈</label>
                             <input id="currentHci" type="text" class="form-control w-auto" required>
                         </div>
                     </div>
                     <div id="game-fields"></div>
                     <input type="button" id="save18_hole" class="btn btn-success" value="Spiel speichern" onclick="save_inputs()">
                     <input type="button" id="calc" class="btn btn-primary" style="margin-left: 1%" value="Handicap berechnen" onclick="calculate_old_hdc()">
-                    <input type="button" id="del18_hole" class="btn btn-warning" style="float: right" value="Eingabefelder leeren" onclick="delete_holes()">
+                    <input type="button" id="clear_game_fields" class="btn btn-warning" style="float: right" value="Eingabefelder leeren" onclick="clearGameFields()">
                 </div>
 
                 <div id="course" class="hidden">
@@ -132,16 +132,18 @@
                             <label class="form-label" for="course_name">Kursname</label>
                         </div>
                         <div class="form-floating mb-3" style="margin-right: 2.5%">
-                            <input id="course_slope" type="text" class="form-control w-auto" placeholder="" required>
+                            <input id="course_slope" type="number" class="form-control w-auto" placeholder="" required>
                             <label class="form-label" for="course_slope">Slope-Rating</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input id="course_rating" type="text" class="form-control w-auto" placeholder="" required>
+                            <input id="course_rating" type="number" class="form-control w-auto" placeholder="" required>
                             <label class="form-label" for="course_rating">Kurs-Rating</label>
                         </div>
                     </div>
+
                     <div id="course-input-hole-fields"></div>
                     <input type="button" class="btn btn-success" id="save_course" value="Kurs speichern" onclick="save_course()">
+                    <input type="button" id="clear_course_fields" class="btn btn-warning" style="float: right" value="Eingabefelder leeren" onclick="clearCourseFields()">
                 </div>
 
                 <div id="stats" class="hidden">
