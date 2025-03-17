@@ -1,12 +1,6 @@
-function calculateHandicaps(email) {
+function calculateHandicaps() {
     let json_data = JSON.parse(localStorage.getItem("data"));
-    let games;
-    for (let i = 0; i < json_data.length; i++) {
-        if (json_data[i].email === email) {
-            games = json_data[i].games;
-            break;
-        }
-    }
+    const games = current_user_data.games;
 
     let previousGame;
     if (games.length === 1) {
@@ -16,22 +10,23 @@ function calculateHandicaps(email) {
     }
 
     const ega = calculate_old_hdc(previousGame, games[games.length-1]);
-    const whc = calculate_whci(games);
+    const whci = whci(games);
 
     for (let x = 0; x < json_data.length; x++) {
-        if (json_data[x].email === email) {
-            json_data[x].games[games.length -1].ega = json_data[x].current_ega;
+        if (json_data[x].email === current_user_data.email) {
             json_data[x].current_ega = ega;
-            json_data[x].games[games.length -1].whc = json_data[x].current_whc;
-            json_data[x].current_whc = whc;
+            json_data[x].games[games.length -1].ega = ega;
+            json_data[x].current_whci = whci;
+            json_data[x].games[games.length -1].whci = whci;
         }
     }
 
-    localStorage.setItem("data", JSON.stringify(json_data));
-    return { ega, whc };
+    document.getElementById("old_handicap").innerHTML = ega;
+    document.getElementById("new_handicap").innerHTML = whci;
+    localStorage.setItem("data", JSON.stringify(json_data))
 }
 
-function calculate_whci(games) {
+function whci(games) {
     const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
     games.slice(-20);
@@ -93,13 +88,13 @@ function scoreDifferential(game) {
         }
     }
 
-    let otherNine = game.holes.length === 9 ? (Math.abs(game.whc) * 1.04 + 2.4) / 2 : 0;
+    let otherNine = game.holes.length === 9 ? (Math.abs(game.hcp_index) * 1.04 + 2.4) / 2 : 0;
 
-    return Math.round(((grossHits - parseFloat(game.course_rating)) * 113 / parseFloat(game.slope_rating) + otherNine) * 10) / 10;
+    return Math.round(((grossHits - game.course_rating) * 113 / game.slope_rating + otherNine) * 10) / 10;
 }
 
 function calcCourseHdc(game) {
-    return Math.abs(game.whc) * parseFloat(game.slope_rating) / 113 + parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0));
+    return Math.abs(game.hcp_index) * game.slope_rating / 113 + game.course_rating - (game.holes.reduce((acc, hole) => acc + hole.par, 0));
 }
 
 function calcStablefordPoints(par, hits) {
@@ -113,13 +108,11 @@ function calcStablefordPoints(par, hits) {
 
 function calculate_stableford(game){
 
-    let stable_points = 0;
-
-    const course_hdc = calcCourseHdc(game); // TODO
+    let stable_points = 0
 
     for (let i = 0; i < 18; i++) {
-        let parInput = game.holes[i].par;
-        let hitsInput = game.holes[i].hits;
+        let parInput = game[i].par;
+        let hitsInput = game[i].hits;
         stable_points += calcStablefordPoints(parInput, hitsInput);
     }
     return stable_points;
@@ -147,6 +140,7 @@ function calculate_old_hdc(game, currentGame){
                 stable_points = stable_points + 1;
                 previousHandicap = previousHandicap + 0.1;
             }
+            console.log(previousHandicap)
             return previousHandicap;
         }
     }
@@ -208,20 +202,34 @@ function calculate_old_hdc(game, currentGame){
         }
     }
     else if (previousHandicap > 26.4 && previousHandicap <= 36){                                        // Handicap class 5
-        if (stable_points > 36){
-            while (stable_points > 36){
+        if (stable_points === 36){
+            return previousHandicap;
+        }
+        else if (stable_points > 36){
+            while (stable_points >= 36){
                 stable_points = stable_points - 1;
                 previousHandicap = previousHandicap - 0.5;
             }
+            return previousHandicap;
+        }
+        else if (stable_points < 34){                                                   // On class 5 and upwards handicap can't increase
+            return previousHandicap;
         }
         return previousHandicap;
     }
     else if (previousHandicap > 36 && previousHandicap <= 54){                                          // Handicap class 6
-        if (stable_points > 36){
-            while (stable_points > 36){
+        if (stable_points === 36){
+            return previousHandicap;
+        }
+        else if (stable_points > 36){
+            while (stable_points >= 36){
                 stable_points = stable_points - 1;
                 previousHandicap = previousHandicap - 1;
             }
+            return previousHandicap;
+        }
+        else if (stable_points < 34){
+            return previousHandicap;
         }
         return previousHandicap;
     }

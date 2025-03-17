@@ -1,7 +1,5 @@
 createCourseSelect();
-createGameLeaderUserSelect();
 generateGameFields();
-generateGameLeaderGameFields();
 generateCourseInputFields();
 showPrintScorecardInputs();
 
@@ -13,27 +11,10 @@ function generateGameFields() {
 
     // Überschrift für die Felder
     let title = document.createElement("h5");
-    title.innerText = "Spiel-Daten eingeben:";
+    title.innerText = "Kurs-Daten eingeben:";
     title.className = "mt-3";
     container.appendChild(title);
 
-    generateGameInputFields(container, ["hcp", "par", "hits"]);
-}
-
-function generateGameLeaderGameFields() {
-    let container = document.getElementById("gameLeader_game_fields");
-    let inputs = container.querySelectorAll("input[type=text]");
-    inputs.forEach(input => input.remove());
-
-    let title = document.createElement("h5");
-    title.innerText = "Spiel-Daten eingeben:";
-    title.className = "mt-3";
-    container.appendChild(title);
-
-    generateGameInputFields(container, ["gLhcp", "gLpar", "gLhits"]);
-}
-
-function generateGameInputFields(container, fieldNames) {
     let div = document.createElement("div");
     div.className = "row g-2 mb-2";
     div.style.display = 'flex';
@@ -78,7 +59,7 @@ function generateGameInputFields(container, fieldNames) {
             inputHcp.className = "form-control text-center border-secondary";
             inputHcp.placeholder = "HCP";
             inputHcp.disabled = true;
-            inputHcp.id = fieldNames[0] +""+ holeNumber;
+            inputHcp.id = `hcp${holeNumber}`;
             tdHcp.appendChild(inputHcp);
             row.appendChild(tdHcp);
 
@@ -88,7 +69,7 @@ function generateGameInputFields(container, fieldNames) {
             inputPar.className = "form-control text-center border-secondary";
             inputPar.placeholder = "Par";
             inputPar.disabled = true;
-            inputPar.id = fieldNames[1] +""+ holeNumber;
+            inputPar.id = `par${holeNumber}`;
             tdPar.appendChild(inputPar);
             row.appendChild(tdPar);
 
@@ -97,7 +78,7 @@ function generateGameInputFields(container, fieldNames) {
             inputHits.type = "number";
             inputHits.className = "form-control text-center border-secondary";
             inputHits.placeholder = "Schläge";
-            inputHits.id = fieldNames[2] +""+ holeNumber;
+            inputHits.id = `hits${holeNumber}`;
             tdHits.appendChild(inputHits);
             row.appendChild(tdHits);
 
@@ -114,7 +95,7 @@ function generateGameInputFields(container, fieldNames) {
 
 function clearGameFields() {
     createCourseSelect();
-    //document.getElementById("currentHci").value = "";
+    document.getElementById("currentHci").value = "";
 
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`par${i}`).value = "";
@@ -132,19 +113,6 @@ function clearCourseFields() {
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`cpar${i}`).value = "";
         document.getElementById(`chcp${i}`).value = "";
-    }
-}
-
-function clearGameLeaderGameFields() {
-    createGameLeaderUserSelect();
-    createGameLeaderGameSelect();
-    document.getElementById("gameLeader_course_slope").value = "";
-    document.getElementById("gameLeader_course_rating").value = "";
-
-    for (let i = 1; i <= 18; i++) {
-        document.getElementById(`gLpar${i}`).value = "";
-        document.getElementById(`gLhcp${i}`).value = "";
-        document.getElementById(`gLhits${i}`).value = "";
     }
 }
 
@@ -221,21 +189,70 @@ function generateCourseInputFields() {
 
 }
 
+function generateHandicapChart() {
+    const ctx = document.getElementById('handicapChart').getContext('2d');
+    const json_data = JSON.parse(localStorage.getItem("data"));
+    const user = json_data.find(user => user.email === current_user_data.email);
+    const games = user.games;
+
+    const labels = games.map(game => game.date);
+    const oldHandicaps = games.map(game => game.ega);
+    const newHandicaps = games.map(game => game.whci);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'EGA (Alte Methode)',
+                    data: oldHandicaps,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                },
+                {
+                    label: 'WHC (Neue Methode)',
+                    data: newHandicaps,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: false,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Datum'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Handicap'
+                    }
+                }
+            }
+        }
+    });
+}
+
 
 function createCourseSelect() {
     const dropdown = document.getElementById("courseSelect");
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
 
-    const savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
+    let savedCourses = JSON.parse(localStorage.getItem("courses")) || ["No course"];
     savedCourses.forEach(course => {
         const option = document.createElement("option");
         option.value = course.course_name;
         option.textContent = course.course_name;
-        if (course.disabled === true) option.disabled = true;
         dropdown.appendChild(option);
     });
-    dropdown.onclick = () => savedCourses.forEach(course => course.disabled === true ? window.alert("Kein Kurs vorhanden.\nDer Sekretär ist dafür zuständig die Kurse des Golfplatzes zu pflegen!") : null);
     dropdown.onchange = load_course_holes;
     createEditCourseSelect();
 }
@@ -245,58 +262,14 @@ function createEditCourseSelect() {
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
 
-    const savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
+    let savedCourses = JSON.parse(localStorage.getItem("courses")) || ["No course"];
     savedCourses.forEach(course => {
         const option = document.createElement("option");
         option.value = course.course_name;
         option.textContent = course.course_name;
-        if (course.disabled === true) option.disabled = true;
         dropdown.appendChild(option);
     });
     dropdown.onchange = load_edit_course_holes;
-}
-
-function createGameLeaderUserSelect() {
-    const dropdown = document.getElementById("gameLeader_user_select");
-
-    dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Golfer</option>';
-
-    const data = JSON.parse(localStorage.getItem("data")) || [{email: "Kein Golfer vorhanden", disabled: true}];
-    const golfers = data.filter(user => user.role === "Golfer");
-    golfers.forEach(user => {
-        const option = document.createElement("option");
-        option.value = user.email;
-        option.textContent = user.email;
-        if (user.disabled === true) option.disabled = true;
-        dropdown.appendChild(option);
-    });
-    dropdown.onchange = (event) => createGameLeaderGameSelect(event.target.value);
-}
-
-function createGameLeaderGameSelect(user_email) {
-    const dropdown = document.getElementById("gameLeader_game_select");
-    document.getElementById("gameLeader_game_select_container").classList.remove("hidden");
-
-    dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle ein Spiel</option>';
-
-    const data = JSON.parse(localStorage.getItem("data"));
-    const user = data.find(user => user.email === user_email) || {games: [{course_name: "Kein Spiel vorhanden", disabled: true}]};
-    if (user.games.length === 0) {
-        user.games.push({course_name: "Kein Spiel vorhanden", disabled: true});
-    }
-
-    user.games.forEach((game, i) => {
-        const option = document.createElement("option");
-        option.value = i;
-        if (game.disabled === true) {
-            option.textContent = game.course_name;
-            option.disabled = true;
-        } else {
-            option.textContent = game.course_name + " (" + game.date + ")";
-        }
-        dropdown.appendChild(option);
-    });
-    dropdown.onchange = (event) => load_gameLeader_holes(event.target.value);
 }
 
 function switchAuthTabs(type) {
@@ -343,6 +316,7 @@ function switchContentTabs(type) {
     } else if (type === "stats") {
         document.getElementById("stats").classList.remove("hidden");
         document.getElementById("stats-tab").classList.add("active");
+        generateHandicapChart();
     } else if (type === "scorecard") {
         document.getElementById("scorecard").classList.remove("hidden");
         document.getElementById("scorecard-tab").classList.add("active");
@@ -360,54 +334,9 @@ function hideContentModal() {
     document.getElementById("content").classList.add("hidden");
 }
 
-function showRoleSpecificTabs(role) {
-    document.getElementById("game").classList.add("hidden");
-    document.getElementById("game-tab").classList.add("hidden");
-    document.getElementById("game-tab").classList.remove("active");
-    document.getElementById("stats").classList.add("hidden");
-    document.getElementById("stats-tab").classList.add("hidden");
-    document.getElementById("stats-tab").classList.remove("active");
-
-    document.getElementById("course").classList.add("hidden");
-    document.getElementById("course-tab").classList.add("hidden");
-    document.getElementById("course-tab").classList.remove("active");
-    document.getElementById("scorecard").classList.add("hidden");
-    document.getElementById("scorecard-tab").classList.add("hidden");
-    document.getElementById("scorecard-tab").classList.remove("active");
-
-    document.getElementById("gameLeader").classList.add("hidden");
-    document.getElementById("gameLeader-tab").classList.add("hidden");
-    document.getElementById("gameLeader-tab").classList.remove("active");
-
-    if (role === "Golfer") {
-        document.getElementById("game").classList.remove("hidden");
-        document.getElementById("game-tab").classList.remove("hidden");
-        document.getElementById("game-tab").classList.add("active");
-        document.getElementById("stats").classList.remove("hidden");
-        document.getElementById("stats-tab").classList.remove("hidden");
-    } else if (role === "Sekretär") {
-        document.getElementById("course").classList.remove("hidden");
-        document.getElementById("course-tab").classList.remove("hidden");
-        document.getElementById("course-tab").classList.add("active");
-        document.getElementById("scorecard").classList.remove("hidden");
-        document.getElementById("scorecard-tab").classList.remove("hidden");
-    } else if (role === "Spielleiter") {
-        document.getElementById("gameLeader").classList.remove("hidden");
-        document.getElementById("gameLeader-tab").classList.remove("hidden");
-        document.getElementById("gameLeader-tab").classList.add("active");
-    }
-}
-
 function setUserInfo(email, role) {
     let userInfo = document.getElementById("user-info");
     userInfo.innerText = `${email} (${role})`;
-
-    /*
-    const ega = current_user_data.current_ega; // set Handicap in das deprecated eingabefeld, falls vorhanden
-    if (!ega && ega !== 0) {
-        current_user_data.current_ega = -54;
-    }
-    document.getElementById("currentHandicap").value = current_user_data.current_ega;*/
 }
 
 function clearUserInfo() {
@@ -429,10 +358,8 @@ function showPrintScorecardInputs() {
 
     // Radio-Buttons für Kurse hinzufügen
     let courses = JSON.parse(localStorage.getItem('courses')) || [];
-    if (courses.length === 0) {
-        const info = document.createElement("p");
-        info.innerHTML = 'Keine Kurse vorhanden';
-        courseRadiosContainer.appendChild(info);
+    if (courses.length < 0) {
+        courseRadiosContainer.innerHTML = '<p>Keine Kurse vorhanden</p>';
     } else {
         courses.forEach(course => {
             const radioButton = document.createElement('div');
@@ -450,22 +377,21 @@ function showPrintScorecardInputs() {
     
     // Radio-Buttons für User hinzufügen
     let data = JSON.parse(localStorage.getItem('data')) || [];
-    const golfers = data.filter(user => user.role === "Golfer");
-    if (golfers.length === 0) {
-        const info = document.createElement("p");
-        info.innerHTML = 'Keine Golfer vorhanden';
-        userRadiosContainer.appendChild(info);
+    if (data.length < 0) {
+        userRadiosContainer.innerHTML = '<p>Keine Spieler vorhanden</p>';
     } else {
-        golfers.forEach(data => {
-            const radioButton = document.createElement('div');
-            radioButton.classList.add('form-check');
-            radioButton.innerHTML = `
-            <input class="form-check-input" type="radio" name="user" value="${data.email}">
-            <label class="form-check-label" for="${data.email}">
-                ${data.email}
-            </label>
-            `;
-            userRadiosContainer.appendChild(radioButton);
+        data.forEach(data => {
+            if (data.role === 'Golfer') {
+                const radioButton = document.createElement('div');
+                radioButton.classList.add('form-check');
+                radioButton.innerHTML = `
+                <input class="form-check-input" type="radio" name="user" value="${data.email}">
+                <label class="form-check-label" for="${data.email}">
+                    ${data.email}
+                </label>
+                `;
+                userRadiosContainer.appendChild(radioButton);
+            }
         });
     }
 
@@ -491,7 +417,11 @@ function checkSelections(courseRadios, userRadios, printButton) {
     const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
     const selectedUser = Array.from(userRadios).find(radio => radio.checked);
 
-    printButton.disabled = !(selectedCourse && selectedUser);
+    if (selectedCourse && selectedUser) {
+        printButton.disabled = false; // Button aktivieren
+    } else {
+        printButton.disabled = true; // Button deaktivieren
+    }
 }
 
 function showEditCourse() {
