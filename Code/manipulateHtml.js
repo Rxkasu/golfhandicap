@@ -114,7 +114,7 @@ function generateGameInputFields(container, fieldNames) {
 
 function clearGameFields() {
     createCourseSelect();
-    document.getElementById("currentHci").value = "";
+    //document.getElementById("currentHci").value = "";
 
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`par${i}`).value = "";
@@ -358,6 +358,44 @@ function showContentModal() {
 
 function hideContentModal() {
     document.getElementById("content").classList.add("hidden");
+}
+
+function showRoleSpecificTabs(role) {
+    document.getElementById("game").classList.add("hidden");
+    document.getElementById("game-tab").classList.add("hidden");
+    document.getElementById("game-tab").classList.remove("active");
+    document.getElementById("stats").classList.add("hidden");
+    document.getElementById("stats-tab").classList.add("hidden");
+    document.getElementById("stats-tab").classList.remove("active");
+
+    document.getElementById("course").classList.add("hidden");
+    document.getElementById("course-tab").classList.add("hidden");
+    document.getElementById("course-tab").classList.remove("active");
+    document.getElementById("scorecard").classList.add("hidden");
+    document.getElementById("scorecard-tab").classList.add("hidden");
+    document.getElementById("scorecard-tab").classList.remove("active");
+
+    document.getElementById("gameLeader").classList.add("hidden");
+    document.getElementById("gameLeader-tab").classList.add("hidden");
+    document.getElementById("gameLeader-tab").classList.remove("active");
+
+    if (role === "Golfer") {
+        document.getElementById("game").classList.remove("hidden");
+        document.getElementById("game-tab").classList.remove("hidden");
+        document.getElementById("game-tab").classList.add("active");
+        document.getElementById("stats").classList.remove("hidden");
+        document.getElementById("stats-tab").classList.remove("hidden");
+    } else if (role === "Sekretär") {
+        document.getElementById("course").classList.remove("hidden");
+        document.getElementById("course-tab").classList.remove("hidden");
+        document.getElementById("course-tab").classList.add("active");
+        document.getElementById("scorecard").classList.remove("hidden");
+        document.getElementById("scorecard-tab").classList.remove("hidden");
+    } else if (role === "Spielleiter") {
+        document.getElementById("gameLeader").classList.remove("hidden");
+        document.getElementById("gameLeader-tab").classList.remove("hidden");
+        document.getElementById("gameLeader-tab").classList.add("active");
+    }
 }
 
 function setUserInfo(email, role) {

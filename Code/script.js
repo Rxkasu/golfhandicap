@@ -82,6 +82,7 @@ function login(){
     current_user_data = log_user;
     hideAuthModal();
     showContentModal();
+    showRoleSpecificTabs(current_user_data.role);
     setUserInfo(email, current_user_data.role);
 }
 
