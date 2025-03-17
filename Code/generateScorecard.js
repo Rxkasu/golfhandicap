@@ -16,7 +16,7 @@ function printScorecard() {
         // Richtigen Kurs aus Local Sorage holen
         let courses = JSON.parse(localStorage.getItem("courses"));
 
-        let selectedCourseData = null;
+        let selectedCourseData;
 
         for (let x = 0; x < courses.length; x++){
             if (courses[x].course_name === selectedCourseName){
@@ -28,7 +28,7 @@ function printScorecard() {
         // Richtigen User aus Local Storage holen
         let data = JSON.parse(localStorage.getItem("data"));
 
-        let selectedUserData = null;
+        let selectedUserData;
 
         for (let x = 0; x < data.length; x++){
             if (data[x].email === selectedUserEmail){
@@ -38,7 +38,7 @@ function printScorecard() {
         }
 
         // Course-Handicap berechnen
-        let courseHandicap = calculate_course_handicap(selectedUserData.whci_handicap, selectedCourseData.course_rating, selectedCourseData.slope_rating, calculate_course_par(selectedCourseData.holes));
+        let courseHandicap = calculate_course_handicap(selectedUserData.current_whci, selectedCourseData.course_rating, selectedCourseData.slope_rating, calculate_course_par(selectedCourseData.holes));
 
         // Hier kannst du die Funktion für das tatsächliche Drucken oder PDF-Generieren einfügen
         const { jsPDF } = window.jspdf;
@@ -55,7 +55,7 @@ function printScorecard() {
         doc.text("E-Mail: " + selectedUserEmail, 10, 30);
         doc.text("Course Rating: " + selectedCourseData.course_rating, 10, 40);
         doc.text("Slope Rating: " + selectedCourseData.slope_rating, 10, 50);
-        doc.text("Handicap: " + selectedUserData.whci_handicap, 10, 60);
+        doc.text("Handicap: " + selectedUserData.current_whci, 10, 60);
         doc.text("Course Handicap: "+ courseHandicap, 10, 70);
 
         // Tabellenkopf & leere Daten

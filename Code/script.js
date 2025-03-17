@@ -109,8 +109,8 @@ function save_inputs(){
             ]}
     let json_data = JSON.parse(localStorage.getItem("data"));
     for (let i = 1; i <= 18; i++) {
-        let par = document.getElementById(`par${i}`).value || null; //duplicated? what if course update feature will get implemented?
-        let hcp = document.getElementById(`hcp${i}`).value || null; //duplicated? what if course update feature will get implemented?
+        let par = document.getElementById(`par${i}`).value || null;
+        let hcp = document.getElementById(`hcp${i}`).value || null;
         let hits = document.getElementById(`hits${i}`).value || null;
         if (hits == null) return window.alert("Schläge Eingabefeld " + i + " darf nicht leer sein");
 
@@ -129,7 +129,9 @@ function save_inputs(){
           break;
         }
     }
-    calculate_par()
+    calculate_par();
+    notificationAlert("Spiel erfolgreich gespeichert!");
+    calculateHandicaps();
 }
 
 //calculates total Par of Golf-course
@@ -180,6 +182,8 @@ function load_course_holes(){
     for (let x = 0; x < courses.length; x++){
         if (courses[x].course_name === name){
 
+            document.getElementById("game_course_rating").value = courses[x].course_rating;
+            document.getElementById("game_course_slope").value = courses[x].slope_rating;
             for (let i = 1; i <= 18; i++) {
                 let parInput = document.getElementById(`par${i}`);
                 let hcpInput = document.getElementById(`hcp${i}`);
