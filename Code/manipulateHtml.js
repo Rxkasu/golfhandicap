@@ -383,13 +383,11 @@ function showRoleSpecificTabs(role) {
         document.getElementById("game").classList.remove("hidden");
         document.getElementById("game-tab").classList.remove("hidden");
         document.getElementById("game-tab").classList.add("active");
-        document.getElementById("stats").classList.remove("hidden");
         document.getElementById("stats-tab").classList.remove("hidden");
     } else if (role === "Sekretär") {
         document.getElementById("course").classList.remove("hidden");
         document.getElementById("course-tab").classList.remove("hidden");
         document.getElementById("course-tab").classList.add("active");
-        document.getElementById("scorecard").classList.remove("hidden");
         document.getElementById("scorecard-tab").classList.remove("hidden");
     } else if (role === "Spielleiter") {
         document.getElementById("gameLeader").classList.remove("hidden");
@@ -425,6 +423,7 @@ function showPrintScorecardInputs() {
     let courseRadiosContainer = document.getElementById('course-radios');
     courseRadiosContainer.innerHTML = '';
     let userRadiosContainer = document.getElementById('user-radios');
+    userRadiosContainer.innerHTML = '';
     let printButton = document.getElementById('print-scorecard');
 
     // Radio-Buttons für Kurse hinzufügen

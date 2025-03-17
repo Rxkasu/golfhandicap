@@ -7,7 +7,7 @@ function printScorecard() {
     const selectedUser = Array.from(userRadios).find(radio => radio.checked);
 
     if (!selectedCourse || !selectedUser) {
-        window.alert('Bitte wählen Sie sowohl einen Kurs als auch einen Benutzer aus!');
+        window.alert('Bitte wählen Sie sowohl einen Kurs als auch einen Golfer aus!');
     } else {
 
         let selectedCourseName = selectedCourse.value;
@@ -122,7 +122,7 @@ function printScorecard() {
 document.getElementById('print-scorecard').addEventListener('click', printScorecard);
 
 function calculate_course_handicap(user_handicap, course_rating, slope_rating, par) {
-    return Math.abs(Math.round(user_handicap * (parseFloat(slope_rating) / 113) + parseFloat(course_rating) - par)); //Runden richtig?
+    return Math.abs(Math.round(user_handicap * (parseFloat(slope_rating) / 113) + parseFloat(course_rating) - par)); //Runden richtig???
 }
 
 function calculate_course_par(holes) {
