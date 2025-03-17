@@ -343,6 +343,7 @@ function switchContentTabs(type) {
     } else if (type === "stats") {
         document.getElementById("stats").classList.remove("hidden");
         document.getElementById("stats-tab").classList.add("active");
+        generateHandicapChart();
     } else if (type === "scorecard") {
         document.getElementById("scorecard").classList.remove("hidden");
         document.getElementById("scorecard-tab").classList.add("active");
