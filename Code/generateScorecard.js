@@ -38,7 +38,7 @@ function printScorecard() {
         }
 
         // Course-Handicap berechnen
-        let courseHandicap = calculate_course_handicap(selectedUserData.current_whci, selectedCourseData.course_rating, selectedCourseData.slope_rating, calculate_course_par(selectedCourseData.holes));
+        let courseHandicap = calculate_course_handicap(selectedUserData.current_whc, selectedCourseData.course_rating, selectedCourseData.slope_rating, calculate_course_par(selectedCourseData.holes));
 
         // Hier kannst du die Funktion für das tatsächliche Drucken oder PDF-Generieren einfügen
         const { jsPDF } = window.jspdf;
@@ -55,7 +55,7 @@ function printScorecard() {
         doc.text("E-Mail: " + selectedUserEmail, 10, 30);
         doc.text("Course Rating: " + selectedCourseData.course_rating, 10, 40);
         doc.text("Slope Rating: " + selectedCourseData.slope_rating, 10, 50);
-        doc.text("Handicap: " + selectedUserData.current_whci, 10, 60);
+        doc.text("Handicap: " + selectedUserData.current_whc, 10, 60);
         doc.text("Course Handicap: "+ courseHandicap, 10, 70);
 
         // Tabellenkopf & leere Daten
@@ -122,7 +122,7 @@ function printScorecard() {
 document.getElementById('print-scorecard').addEventListener('click', printScorecard);
 
 function calculate_course_handicap(user_handicap, course_rating, slope_rating, par) {
-    return Math.abs(user_handicap * (slope_rating / 113) + course_rating - par);
+    return Math.abs(Math.round(user_handicap * (parseFloat(slope_rating) / 113) + parseFloat(course_rating) - par)); //Runden richtig?
 }
 
 function calculate_course_par(holes) {

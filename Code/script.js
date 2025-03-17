@@ -1,16 +1,58 @@
 let current_user_data;
 let logged_in;
+if (!JSON.parse(localStorage.getItem("data"))) addTestUserAndGame();
 
-function create_json(){
-    //if (localStorage.getItem("data") == null){
+function addTestUserAndGame(){ //TESTING ONLY call this function to add the Test-Data to your Local-Storage: first game of Testing-Data
+    let json_data = JSON.parse(localStorage.getItem("data")) || [];
+    let courses = JSON.parse(localStorage.getItem("courses")) || [];
 
-        //json_data = {"user_id": '', "sur_name": '', "first_name": '', "games": []}
-        //localStorage.setItem("data", JSON.stringify(json_data))
-    //}
-    //else {
-    //    let data = localStorage.getItem("data")
-    //     json_data = JSON.parse(data)
-    //}
+    json_data.push({email: "Tester@123", password: "123", role: "Golfer", current_whc: 54, current_ega: -54, games:
+            [
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 54, ega: -54, course_rating: "70.9", slope_rating: "115", par: 72, holes:
+                [
+                    {hole_id: 1, par: 3, hcp: 4, hits: 5},
+                    {hole_id: 2, par: 4, hcp: 16, hits: 6},
+                    {hole_id: 3, par: 4, hcp: 1, hits: 8},
+                    {hole_id: 4, par: 5, hcp: 10, hits: 7},
+                    {hole_id: 5, par: 4, hcp: 7, hits: 6},
+                    {hole_id: 6, par: 4, hcp: 13, hits: 6},
+                    {hole_id: 7, par: 3, hcp: 5, hits: 6},
+                    {hole_id: 8, par: 4, hcp: 17, hits: 6},
+                    {hole_id: 9, par: 4, hcp: 2, hits: 6},
+                    {hole_id: 10, par: 5, hcp: 11, hits: 7},
+                    {hole_id: 11, par: 4, hcp: 8, hits: 6},
+                    {hole_id: 12, par: 4, hcp: 14, hits: 6},
+                    {hole_id: 13, par: 3, hcp: 6, hits: 5},
+                    {hole_id: 14, par: 4, hcp: 18, hits: 6},
+                    {hole_id: 15, par: 4, hcp: 3, hits: 6},
+                    {hole_id: 16, par: 5, hcp: 12, hits: 6},
+                    {hole_id: 17, par: 4, hcp: 9, hits: 5},
+                    {hole_id: 18, par: 4, hcp: 15, hits: 6}
+                ]}
+            ]})
+    courses.push({course_name: "Test-Kurs", course_rating: "70.9", slope_rating: "115",holes:
+            [
+                {hole_id: 1, par: 3, hcp: 4},
+                {hole_id: 2, par: 4, hcp: 16},
+                {hole_id: 3, par: 4, hcp: 1},
+                {hole_id: 4, par: 5, hcp: 10},
+                {hole_id: 5, par: 4, hcp: 7},
+                {hole_id: 6, par: 4, hcp: 13},
+                {hole_id: 7, par: 3, hcp: 5},
+                {hole_id: 8, par: 4, hcp: 17},
+                {hole_id: 9, par: 4, hcp: 2},
+                {hole_id: 10, par: 5, hcp: 11},
+                {hole_id: 11, par: 4, hcp: 8},
+                {hole_id: 12, par: 4, hcp: 14},
+                {hole_id: 13, par: 3, hcp: 6},
+                {hole_id: 14, par: 4, hcp: 18},
+                {hole_id: 15, par: 4, hcp: 3},
+                {hole_id: 16, par: 5, hcp: 12},
+                {hole_id: 17, par: 4, hcp: 9},
+                {hole_id: 18, par: 4, hcp: 15}
+            ]})
+    localStorage.setItem("data", JSON.stringify(json_data));
+    localStorage.setItem("courses", JSON.stringify(courses));
 }
 
 // Gets actual Date in Day/Month/Year-format
@@ -51,6 +93,9 @@ function logout(){
         document.getElementById("regisPass").value = "";
         document.getElementById("regisPassCheck").value = "";
         clearUserInfo();
+        clearGameFields();
+        clearCourseFields();
+        clearGameLeaderGameFields();
         hideContentModal();
         showAuthModal();
         notificationAlert("Erfolgreich ausgeloggt!");
@@ -76,7 +121,7 @@ function register(){
     } else {
         if (password !== passwordCheck) return window.alert("Passwort und Wiederholen-Passwort stimmen nicht überein"); // Check if Password is also the Check (Wiederholen)
 
-        const new_user = {"email": email, "role": role, "password": password, "games": []}
+        const new_user = {"email": email, "role": role, "password": password, current_whc: 54, current_ega: -54, "games": []};
         json_data.push(new_user)                                        // Append new user
         localStorage.setItem("data", JSON.stringify(json_data))         // save JSON with new user
         current_user_data = new_user;
@@ -84,21 +129,22 @@ function register(){
         notificationAlert("Registrierung erfolgreich! Jetzt kannst du dich einloggen.");
         switchAuthTabs("login");
         document.getElementById("loginEmail").value = email;
+        showPrintScorecardInputs();
+        createGameLeaderUserSelect();
     }
-    showPrintScorecardInputs();
 }
 
 // saves data of an 18-hole-game in an array
 function save_inputs(){
     const course_name = document.getElementById("courseSelect").value;
     if (!course_name.trim()) {                                            // Check for name
-        return window.alert("Bitte Kurs auswählen!");
+        return window.alert("Bitte einen Kurs auswählen!");
     }
 
     const savedCourses = JSON.parse(localStorage.getItem("courses"));
     const course = savedCourses.find(obj => obj.course_name === course_name);
 
-    const game_data = {"game_id": '',"course_name": course_name, "date": get_date(), "hcp_index": 0, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": '',
+    const game_data = {"game_id": '',"course_name": course_name, "date": get_date(), "whc": current_user_data.current_whc || 54, "ega": current_user_data.current_ega || -54, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": '',
             "holes": [
                 {"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
                 {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
@@ -132,7 +178,9 @@ function save_inputs(){
     }
     calculate_par();
     notificationAlert("Spiel erfolgreich gespeichert!");
-    calculateHandicaps();
+    const { ega, whc } = calculateHandicaps(current_user_data.email);
+    document.getElementById("old_handicap").innerHTML = ega;
+    document.getElementById("new_handicap").innerHTML = whc;
 }
 
 //calculates total Par of Golf-course
@@ -180,7 +228,6 @@ function delete_holes(){
 function load_course_holes(){
     let courses = JSON.parse(localStorage.getItem("courses"));
     let name = document.getElementById("courseSelect").value;
-    console.log("ja");
     for (let x = 0; x < courses.length; x++){
         if (courses[x].course_name === name){
 
@@ -201,8 +248,8 @@ function load_course_holes(){
 }
 
 function load_edit_course_holes(){
-    let courses = JSON.parse(localStorage.getItem("courses"));
-    let name = document.getElementById("edit_course_select").value;
+    const courses = JSON.parse(localStorage.getItem("courses"));
+    const name = document.getElementById("edit_course_select").value;
     for (let x = 0; x < courses.length; x++){
         if (courses[x].course_name === name){
 
@@ -223,32 +270,66 @@ function load_edit_course_holes(){
     }
 }
 
-function load_holes(){
-    let json_data = JSON.parse(localStorage.getItem("data"));
-    console.log(json_data)
-    let name = document.getElementById("courseSelect").value
-    for (let x = 0; x < json_data.length; x++){
-        if (json_data[x].email === current_user_data.email){
-            for (let y = 0; y < json_data[x].games.length; y++){
-                if (json_data[x].games[y].course_name === name){
-                    for (let i = 1; i <= 18; i++) {
-                        let parInput = document.getElementById(`par${i}`);
-                        let hcpInput = document.getElementById(`hcp${i}`);
-                        let hitsInput = document.getElementById(`hits${i}`);
+function load_gameLeader_holes(game_index){
+    const json_data = JSON.parse(localStorage.getItem("data"));
 
-                        if (parInput && hcpInput && hitsInput) {
-                            parInput.value = json_data[x].games[y].holes[i - 1].par;
-                            hcpInput.value = json_data[x].games[y].holes[i - 1].hcp;
-                            hitsInput.value = json_data[x].games[y].holes[i - 1].hits;
-                        }
-                    }
-                    break
+    const email = document.getElementById("gameLeader_user_select").value;
+
+    for (let x = 0; x < json_data.length; x++){
+        if (json_data[x].email === email){
+
+            document.getElementById("gameLeader_course_rating").value = json_data[x].games[game_index].course_rating;
+            document.getElementById("gameLeader_course_slope").value = json_data[x].games[game_index].slope_rating;
+            for (let i = 1; i <= 18; i++) {
+                let parInput = document.getElementById(`gLpar${i}`);
+                let hcpInput = document.getElementById(`gLhcp${i}`);
+                let hitsInput = document.getElementById(`gLhits${i}`);
+
+                if (parInput && hcpInput && hitsInput) {
+                    parInput.value = json_data[x].games[game_index].holes[i - 1].par;
+                    hcpInput.value = json_data[x].games[game_index].holes[i - 1].hcp;
+                    hitsInput.value = json_data[x].games[game_index].holes[i - 1].hits;
                 }
             }
-            break
+            break;
         }
-
     }
+}
+
+function save_gameLeader_editedHoles(){
+    const email = document.getElementById("gameLeader_user_select").value;
+    const game_index = document.getElementById("gameLeader_game_select").value;
+    if (!email) return window.alert("Bitte einen Golfer auswählen!");
+    if (!game_index && game_index !== 0) return window.alert("Bitte ein Spiel auswählen!");
+
+    const json_data = JSON.parse(localStorage.getItem("data"));
+    let game_data;
+
+    for (let i = 0; i < json_data.length; i++) {
+        if (json_data[i].email === email) {
+            game_data = json_data[i].games[game_index];
+            break;
+        }
+    }
+
+    for (let i = 1; i <= 18; i++) {
+        let hits = document.getElementById(`gLhits${i}`).value || null;
+        if (hits == null) return window.alert("Schläge Eingabefeld " + i + " darf nicht leer sein!");
+        if (hits < 1) return window.alert("Schläge Eingabefeld " + i + " darf nicht kleiner als 1 sein!");
+
+        game_data.holes[i - 1].hits = hits ? parseInt(hits) : 0;
+    }
+
+    for (let i = 0; i < json_data.length; i++) {
+        if (json_data[i].email === email) {
+            json_data[i].games[game_index] = game_data;
+            localStorage.setItem("data", JSON.stringify(json_data));
+            break;
+        }
+    }
+    notificationAlert("Spiel erfolgreich bearbeitet!");
+    const { ega, whc } = calculateHandicaps(email); // TODO also every game after this edited game???
+    return { ega, whc, email};
 }
 
 // Delets a single course game
@@ -389,9 +470,9 @@ function saveEditCourse() {
 }
 
 function sendMail(user){
-    let name = user.email.substring(0, current_user_data.email.indexOf("@"));
-    let nachricht = "Hallo " + name + ",\ndein Golf-Handicap wurde aktualisiert und ist nun " + user.hcp + ".\nMit freundlichen Grüßen dein Golf-HCC Team";
-    let mailtoLink = "mailto: " + user.email
+    let name = user.email.substring(0, user.email.indexOf("@"));
+    let nachricht = "Hallo " + name + ",\n\ndein Golf-Handicap wurde aktualisiert und ist nun:\nEGA: " + user.ega + "\nWHC: " + user.whc + "\n\nMit freundlichen Grüßen dein Golf-HCC Team";
+    let mailtoLink = "mailto:" + user.email
         + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
         + "&body=" + encodeURIComponent(nachricht);
     window.open(mailtoLink, "_blank");

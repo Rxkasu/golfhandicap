@@ -1,5 +1,7 @@
 createCourseSelect();
+createGameLeaderUserSelect();
 generateGameFields();
+generateGameLeaderGameFields();
 generateCourseInputFields();
 showPrintScorecardInputs();
 
@@ -11,10 +13,27 @@ function generateGameFields() {
 
     // Überschrift für die Felder
     let title = document.createElement("h5");
-    title.innerText = "Kurs-Daten eingeben:";
+    title.innerText = "Spiel-Daten eingeben:";
     title.className = "mt-3";
     container.appendChild(title);
 
+    generateGameInputFields(container, ["hcp", "par", "hits"]);
+}
+
+function generateGameLeaderGameFields() {
+    let container = document.getElementById("gameLeader_game_fields");
+    let inputs = container.querySelectorAll("input[type=text]");
+    inputs.forEach(input => input.remove());
+
+    let title = document.createElement("h5");
+    title.innerText = "Spiel-Daten eingeben:";
+    title.className = "mt-3";
+    container.appendChild(title);
+
+    generateGameInputFields(container, ["gLhcp", "gLpar", "gLhits"]);
+}
+
+function generateGameInputFields(container, fieldNames) {
     let div = document.createElement("div");
     div.className = "row g-2 mb-2";
     div.style.display = 'flex';
@@ -59,7 +78,7 @@ function generateGameFields() {
             inputHcp.className = "form-control text-center border-secondary";
             inputHcp.placeholder = "HCP";
             inputHcp.disabled = true;
-            inputHcp.id = `hcp${holeNumber}`;
+            inputHcp.id = fieldNames[0] +""+ holeNumber;
             tdHcp.appendChild(inputHcp);
             row.appendChild(tdHcp);
 
@@ -69,7 +88,7 @@ function generateGameFields() {
             inputPar.className = "form-control text-center border-secondary";
             inputPar.placeholder = "Par";
             inputPar.disabled = true;
-            inputPar.id = `par${holeNumber}`;
+            inputPar.id = fieldNames[1] +""+ holeNumber;
             tdPar.appendChild(inputPar);
             row.appendChild(tdPar);
 
@@ -78,7 +97,7 @@ function generateGameFields() {
             inputHits.type = "number";
             inputHits.className = "form-control text-center border-secondary";
             inputHits.placeholder = "Schläge";
-            inputHits.id = `hits${holeNumber}`;
+            inputHits.id = fieldNames[2] +""+ holeNumber;
             tdHits.appendChild(inputHits);
             row.appendChild(tdHits);
 
@@ -113,6 +132,19 @@ function clearCourseFields() {
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`cpar${i}`).value = "";
         document.getElementById(`chcp${i}`).value = "";
+    }
+}
+
+function clearGameLeaderGameFields() {
+    createGameLeaderUserSelect();
+    createGameLeaderGameSelect();
+    document.getElementById("gameLeader_course_slope").value = "";
+    document.getElementById("gameLeader_course_rating").value = "";
+
+    for (let i = 1; i <= 18; i++) {
+        document.getElementById(`gLpar${i}`).value = "";
+        document.getElementById(`gLhcp${i}`).value = "";
+        document.getElementById(`gLhits${i}`).value = "";
     }
 }
 
@@ -195,7 +227,7 @@ function createCourseSelect() {
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
 
-    let savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
+    const savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
     savedCourses.forEach(course => {
         const option = document.createElement("option");
         option.value = course.course_name;
@@ -213,7 +245,7 @@ function createEditCourseSelect() {
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
 
-    let savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
+    const savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
     savedCourses.forEach(course => {
         const option = document.createElement("option");
         option.value = course.course_name;
@@ -222,6 +254,49 @@ function createEditCourseSelect() {
         dropdown.appendChild(option);
     });
     dropdown.onchange = load_edit_course_holes;
+}
+
+function createGameLeaderUserSelect() {
+    const dropdown = document.getElementById("gameLeader_user_select");
+
+    dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Golfer</option>';
+
+    const data = JSON.parse(localStorage.getItem("data")) || [{email: "Kein Golfer vorhanden", disabled: true}];
+    const golfers = data.filter(user => user.role === "Golfer");
+    golfers.forEach(user => {
+        const option = document.createElement("option");
+        option.value = user.email;
+        option.textContent = user.email;
+        if (user.disabled === true) option.disabled = true;
+        dropdown.appendChild(option);
+    });
+    dropdown.onchange = (event) => createGameLeaderGameSelect(event.target.value);
+}
+
+function createGameLeaderGameSelect(user_email) {
+    const dropdown = document.getElementById("gameLeader_game_select");
+    document.getElementById("gameLeader_game_select_container").classList.remove("hidden");
+
+    dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle ein Spiel</option>';
+
+    const data = JSON.parse(localStorage.getItem("data"));
+    const user = data.find(user => user.email === user_email) || {games: [{course_name: "Kein Spiel vorhanden", disabled: true}]};
+    if (user.games.length === 0) {
+        user.games.push({course_name: "Kein Spiel vorhanden", disabled: true});
+    }
+
+    user.games.forEach((game, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        if (game.disabled === true) {
+            option.textContent = game.course_name;
+            option.disabled = true;
+        } else {
+            option.textContent = game.course_name + " (" + game.date + ")";
+        }
+        dropdown.appendChild(option);
+    });
+    dropdown.onchange = (event) => load_gameLeader_holes(event.target.value);
 }
 
 function switchAuthTabs(type) {

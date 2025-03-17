@@ -1,17 +1,21 @@
 Hier ein Vorschlag wie die Datenbank-Struktur zusammengesetzt aussehen könnte
 
     {
-        "user_id": 1,
-        "surname": "Maximus",
-        "first_name": "Plebertus",
+        "role": Golfer,
+        "email": "Maximus@Max",
+        "password": "Plebertus",
+        "current_whc": 54,
+        "current_ega": -54,
         "games": [
             {
                 "game_id": 1,
                 "course_name": "Pleb Golf Club Course",
                 "date": "2025/04/01",
-                "hcp_index": 42,
+                "whc": 42,
+                "ega": -54,
                 "course_rating": 70.9,
                 "slope_rating": 115,
+                "par": 72,
                 "holes": [
                     {
                     "hole_id": 1,
@@ -29,9 +33,11 @@ Das ließe sich anhand des ersten Arrays unterteilen in zwei Tabellen.
 Spieler-Daten:
 
     {
-        "user_id": 1,
-        "surname": "Maximus",
-        "first_name": "Plebertus",
+        "role": Golfer,
+        "email": "Maximus@Max",
+        "password": "Plebertus",
+        "current_whc": 54,
+        "current_ega": -54,
         "games": [
             {
                 "game_id": 1,
@@ -51,9 +57,11 @@ Spiel-Daten:
         "game_id": 1,
         "course_name": "Pleb Golf Club Course",
         "date": "2025/04/01",
-        "hcp_index": 42,
+        "whc": 42,
+        "ega": -54,
         "course_rating": 70.9,
         "slope_rating": 115,
+        "par": 72,
         "holes": [
             {
                 "hole_id": 1,
