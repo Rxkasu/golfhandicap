@@ -108,7 +108,9 @@ function calcStablefordPoints(par, hits) {
 
 function calculate_stableford(game){
 
-    let stable_points = 0
+    let stable_points = 0;
+
+    const course_hdc = calcCourseHdc(game); // TODO
 
     for (let i = 0; i < 18; i++) {
         let parInput = game[i].par;
@@ -202,34 +204,20 @@ function calculate_old_hdc(game, currentGame){
         }
     }
     else if (previousHandicap > 26.4 && previousHandicap <= 36){                                        // Handicap class 5
-        if (stable_points === 36){
-            return previousHandicap;
-        }
-        else if (stable_points > 36){
-            while (stable_points >= 36){
+        if (stable_points > 36){
+            while (stable_points > 36){
                 stable_points = stable_points - 1;
                 previousHandicap = previousHandicap - 0.5;
             }
-            return previousHandicap;
-        }
-        else if (stable_points < 34){                                                   // On class 5 and upwards handicap can't increase
-            return previousHandicap;
         }
         return previousHandicap;
     }
     else if (previousHandicap > 36 && previousHandicap <= 54){                                          // Handicap class 6
-        if (stable_points === 36){
-            return previousHandicap;
-        }
-        else if (stable_points > 36){
-            while (stable_points >= 36){
+        if (stable_points > 36){
+            while (stable_points > 36){
                 stable_points = stable_points - 1;
                 previousHandicap = previousHandicap - 1;
             }
-            return previousHandicap;
-        }
-        else if (stable_points < 34){
-            return previousHandicap;
         }
         return previousHandicap;
     }

@@ -28,14 +28,14 @@ function login(){
     let email = (document.getElementById("loginEmail").value);
     let password = (document.getElementById("loginPass").value);
 
-    if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Check for inputs
+    if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Duplicated (Formular checkt es schon)
     if (!password || !password.trim()) return window.alert("Passwort-Feld ist leer");
 
-    if (!json_data) return window.alert("Es wurde noch kein user angelegt");
+    if (!json_data) return window.alert("Es wurde noch kein Nutzer angelegt!");
     let log_user = json_data.find(user => user.email === email) || null;
 
-    if (!log_user) return notificationAlert("user existiert nicht");                     // Check if user exists
-    if (log_user.password !== password) return notificationAlert("Passwort ist falsch"); // Check if Password is correct
+    if (!log_user) return notificationAlert("Es gibt keinen Nutzer mit dieser E-Mail!");                     // Check if user exists
+    if (log_user.password !== password) return notificationAlert("Passwort ist falsch!"); // Check if Password is correct
     logged_in = true;
     current_user_data = log_user;
     hideAuthModal();
@@ -53,9 +53,9 @@ function logout(){
         clearUserInfo();
         hideContentModal();
         showAuthModal();
-        notificationAlert("Erfolgreich ausgeloggt");
+        notificationAlert("Erfolgreich ausgeloggt!");
     } else {
-        window.alert("Nicht eingeloggt")
+        window.alert("Nicht eingeloggt") //unreachable?
     }
 }
 
@@ -67,12 +67,12 @@ function register(){
     let password = (document.getElementById("regisPass").value);
     let passwordCheck = (document.getElementById("regisPassCheck").value);
 
-    if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Check for inputs
+    if (!email || !email.trim()) return window.alert("Email-Feld ist leer"); // Duplicated (Formular checkt es schon)
     if (!password || !password.trim()) return window.alert("Passwort-Feld ist leer");
     if (!password || !passwordCheck.trim()) return window.alert("Passwort-Wiederholen-Feld ist leer");
 
     if (json_data.find(user => user.email === email)){             // Check if user already exists
-        window.alert("User " + email + " existiert bereits.")
+        window.alert("Die E-Mail: " + email + " ist schon vergeben!");
     } else {
         if (password !== passwordCheck) return window.alert("Passwort und Wiederholen-Passwort stimmen nicht überein"); // Check if Password is also the Check (Wiederholen)
 
@@ -92,7 +92,7 @@ function register(){
 function save_inputs(){
     const course_name = document.getElementById("courseSelect").value;
     if (!course_name.trim()) {                                            // Check for name
-        return window.alert("Bitte Kurs auswählen");
+        return window.alert("Bitte Kurs auswählen!");
     }
 
     const savedCourses = JSON.parse(localStorage.getItem("courses"));
@@ -112,7 +112,8 @@ function save_inputs(){
         let par = document.getElementById(`par${i}`).value || null;
         let hcp = document.getElementById(`hcp${i}`).value || null;
         let hits = document.getElementById(`hits${i}`).value || null;
-        if (hits == null) return window.alert("Schläge Eingabefeld " + i + " darf nicht leer sein");
+        if (hits == null) return window.alert("Schläge Eingabefeld " + i + " darf nicht leer sein!");
+        if (hits < 1) return window.alert("Schläge Eingabefeld " + i + " darf nicht kleiner als 1 sein!");
 
         // Set values in JSON-object
         game_data.holes[i - 1].par = par ? parseInt(par) : 0;
@@ -179,6 +180,7 @@ function delete_holes(){
 function load_course_holes(){
     let courses = JSON.parse(localStorage.getItem("courses"));
     let name = document.getElementById("courseSelect").value;
+    console.log("ja");
     for (let x = 0; x < courses.length; x++){
         if (courses[x].course_name === name){
 
@@ -266,12 +268,6 @@ function delete_game(){
     }
     localStorage.setItem("data", JSON.stringify(json_data))
 }
-    
-// Makes container for a new course visible
-function new_course(){
-    let container = document.getElementById("course-input-fields");
-    container.style.display = "block"
-}
 
 function save_course(){
     const course = {
@@ -280,17 +276,16 @@ function save_course(){
         slope_rating: document.getElementById("course_slope").value
     };
 
-    const emptyValue = Object.keys(course).find(key => !course[key].trim()) || null;
-    if (emptyValue) {
-        return window.alert(emptyValue + " darf nicht leer sein");
-    }
+    if (!course.course_name.trim()) return window.alert("Kursname darf nicht leer sein!");
+    if (!course.course_rating.trim() && course.course_rating !== 0) return window.alert("Kurs-Rating darf nicht leer sein!");
+    if (!course.slope_rating.trim() && course.slope_rating !== 0) return window.alert("Slope-Rating darf nicht leer sein!");
 
     const holes = [];
     for (let i = 1; i <= 18; i++) {
-        let par = document.getElementById(`cpar${i}`).value || null;
         let hcp = document.getElementById(`chcp${i}`).value || null;
-        if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein");
-        if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein");
+        let par = document.getElementById(`cpar${i}`).value || null;
+        if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein!");
+        if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein!");
 
         holes.push({
             hole_id: i,
@@ -305,9 +300,11 @@ function save_course(){
     for (let hole of holes) {
         let hcp = hole.hcp;
 
+        if (hcp > 18 || hcp < 1) return window.alert(`Ungültiger HCP-Wert gefunden: ${hcp} bei Loch ${hole.hole_id} gefunden\nHCP darf nur zwischen 1 und 18 liegen!`);
+
         if (seenHcps.has(hcp)) {
             let firstHoleId = seenHcps.get(hcp);                        // First hole with same hcp
-            return window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}`);
+            return window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}!`);
         }
 
         seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole
@@ -318,13 +315,13 @@ function save_course(){
 
     const courseNameDuplicate = savedCourses.find(obj => obj.course_name === course.course_name) || null;
     if (courseNameDuplicate) {
-        return window.alert(course.course_name + " ist schon vergeben");
+        return window.alert(course.course_name + " ist schon vergeben!");
     }
 
     savedCourses.push(course);
 
     localStorage.setItem("courses", JSON.stringify(savedCourses));
-    notificationAlert("Kurs erfolgreich erstellt");
+    notificationAlert("Kurs erfolgreich erstellt!");
     createCourseSelect();
     showPrintScorecardInputs();
 }
@@ -336,17 +333,16 @@ function saveEditCourse() {
         slope_rating: document.getElementById("course_slope").value
     };
 
-    const emptyValue = Object.keys(course).find(key => !course[key].trim()) || null;
-    if (emptyValue) {
-        return window.alert(emptyValue + " darf nicht leer sein");
-    }
+    if (!course.course_name.trim()) return window.alert("Kursname darf nicht leer sein!");
+    if (!course.course_rating.trim() && course.course_rating !== 0) return window.alert("Kurs-Rating darf nicht leer sein!");
+    if (!course.slope_rating.trim() && course.slope_rating !== 0) return window.alert("Slope-Rating darf nicht leer sein!");
 
     const holes = [];
     for (let i = 1; i <= 18; i++) {
-        let par = document.getElementById(`cpar${i}`).value || null;
         let hcp = document.getElementById(`chcp${i}`).value || null;
-        if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein");
-        if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein");
+        let par = document.getElementById(`cpar${i}`).value || null;
+        if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein!");
+        if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein!");
 
         holes.push({
             hole_id: i,
@@ -361,9 +357,11 @@ function saveEditCourse() {
     for (let hole of holes) {
         let hcp = hole.hcp;
 
+        if (hcp > 18 || hcp < 1) return window.alert(`Ungültiger HCP-Wert gefunden: ${hcp} bei Loch ${hole.hole_id} gefunden\nHCP darf nur zwischen 1 und 18 liegen!`);
+
         if (seenHcps.has(hcp)) {
             let firstHoleId = seenHcps.get(hcp);                        // First hole with same hcp
-            return window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}`);
+            return window.alert(`Doppelter HCP-Wert gefunden: ${hcp} bei Loch ${firstHoleId} und ${hole.hole_id}!`);
         }
 
         seenHcps.set(hcp, hole.hole_id);                                // Save hcp with hole
@@ -384,7 +382,7 @@ function saveEditCourse() {
         savedCourses.push(course);
     }   
     localStorage.setItem("courses", JSON.stringify(savedCourses));
-    notificationAlert("Kurs erfolgreich bearbeitet");
+    notificationAlert("Kurs erfolgreich bearbeitet!");
     cancelEditCourse();
     createCourseSelect();
     showPrintScorecardInputs();

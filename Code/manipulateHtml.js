@@ -195,13 +195,15 @@ function createCourseSelect() {
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
 
-    let savedCourses = JSON.parse(localStorage.getItem("courses")) || ["No course"];
+    let savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
     savedCourses.forEach(course => {
         const option = document.createElement("option");
         option.value = course.course_name;
         option.textContent = course.course_name;
+        if (course.disabled === true) option.disabled = true;
         dropdown.appendChild(option);
     });
+    dropdown.onclick = () => savedCourses.forEach(course => course.disabled === true ? window.alert("Kein Kurs vorhanden.\nDer Sekretär ist dafür zuständig die Kurse des Golfplatzes zu pflegen!") : null);
     dropdown.onchange = load_course_holes;
     createEditCourseSelect();
 }
@@ -211,11 +213,12 @@ function createEditCourseSelect() {
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Kurs</option>';
 
-    let savedCourses = JSON.parse(localStorage.getItem("courses")) || ["No course"];
+    let savedCourses = JSON.parse(localStorage.getItem("courses")) || [{course_name: "Kein Kurs vorhanden", disabled: true}];
     savedCourses.forEach(course => {
         const option = document.createElement("option");
         option.value = course.course_name;
         option.textContent = course.course_name;
+        if (course.disabled === true) option.disabled = true;
         dropdown.appendChild(option);
     });
     dropdown.onchange = load_edit_course_holes;
@@ -285,6 +288,13 @@ function hideContentModal() {
 function setUserInfo(email, role) {
     let userInfo = document.getElementById("user-info");
     userInfo.innerText = `${email} (${role})`;
+
+    /*
+    const ega = current_user_data.current_ega; // set Handicap in das deprecated eingabefeld, falls vorhanden
+    if (!ega && ega !== 0) {
+        current_user_data.current_ega = -54;
+    }
+    document.getElementById("currentHandicap").value = current_user_data.current_ega;*/
 }
 
 function clearUserInfo() {
@@ -306,8 +316,10 @@ function showPrintScorecardInputs() {
 
     // Radio-Buttons für Kurse hinzufügen
     let courses = JSON.parse(localStorage.getItem('courses')) || [];
-    if (courses.length < 0) {
-        courseRadiosContainer.innerHTML = '<p>Keine Kurse vorhanden</p>';
+    if (courses.length === 0) {
+        const info = document.createElement("p");
+        info.innerHTML = 'Keine Kurse vorhanden';
+        courseRadiosContainer.appendChild(info);
     } else {
         courses.forEach(course => {
             const radioButton = document.createElement('div');
@@ -325,21 +337,22 @@ function showPrintScorecardInputs() {
     
     // Radio-Buttons für User hinzufügen
     let data = JSON.parse(localStorage.getItem('data')) || [];
-    if (data.length < 0) {
-        userRadiosContainer.innerHTML = '<p>Keine Spieler vorhanden</p>';
+    const golfers = data.filter(user => user.role === "Golfer");
+    if (golfers.length === 0) {
+        const info = document.createElement("p");
+        info.innerHTML = 'Keine Golfer vorhanden';
+        userRadiosContainer.appendChild(info);
     } else {
-        data.forEach(data => {
-            if (data.role === 'Golfer') {
-                const radioButton = document.createElement('div');
-                radioButton.classList.add('form-check');
-                radioButton.innerHTML = `
-                <input class="form-check-input" type="radio" name="user" value="${data.email}">
-                <label class="form-check-label" for="${data.email}">
-                    ${data.email}
-                </label>
-                `;
-                userRadiosContainer.appendChild(radioButton);
-            }
+        golfers.forEach(data => {
+            const radioButton = document.createElement('div');
+            radioButton.classList.add('form-check');
+            radioButton.innerHTML = `
+            <input class="form-check-input" type="radio" name="user" value="${data.email}">
+            <label class="form-check-label" for="${data.email}">
+                ${data.email}
+            </label>
+            `;
+            userRadiosContainer.appendChild(radioButton);
         });
     }
 
@@ -365,11 +378,7 @@ function checkSelections(courseRadios, userRadios, printButton) {
     const selectedCourse = Array.from(courseRadios).find(radio => radio.checked);
     const selectedUser = Array.from(userRadios).find(radio => radio.checked);
 
-    if (selectedCourse && selectedUser) {
-        printButton.disabled = false; // Button aktivieren
-    } else {
-        printButton.disabled = true; // Button deaktivieren
-    }
+    printButton.disabled = !(selectedCourse && selectedUser);
 }
 
 function showEditCourse() {

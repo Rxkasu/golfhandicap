@@ -7,13 +7,13 @@ function printScorecard() {
     const selectedUser = Array.from(userRadios).find(radio => radio.checked);
 
     if (!selectedCourse || !selectedUser) {
-        alert('Bitte wählen Sie sowohl einen Kurs als auch einen Benutzer aus.');
+        window.alert('Bitte wählen Sie sowohl einen Kurs als auch einen Benutzer aus!');
     } else {
 
         let selectedCourseName = selectedCourse.value;
         let selectedUserEmail = selectedUser.value;
         
-        // Richtigen Kurs aus Local Sorage holen
+        // Richtigen Kurs aus Local Storage holen
         let courses = JSON.parse(localStorage.getItem("courses"));
 
         let selectedCourseData;
@@ -114,7 +114,7 @@ function printScorecard() {
         // PDF speichern
         doc.save("golf_scorecard.pdf");
         
-        alert(`Scorecard für ${selectedUser.value} - Kurs: ${selectedCourse.value} wird gedruckt.`);
+        notificationAlert(`Scorecard für ${selectedUser.value} - Kurs: ${selectedCourse.value} steht zum Download bereit!`);
     }
 }
 
