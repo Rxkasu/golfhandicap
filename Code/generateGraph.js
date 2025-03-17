@@ -1,3 +1,5 @@
+let handicapChartInstance = null;
+
 function generateHandicapChart() {
     const ctx = document.getElementById('handicapChart').getContext('2d');
     const json_data = JSON.parse(localStorage.getItem("data"));
@@ -7,11 +9,16 @@ function generateHandicapChart() {
     const labels = ["Start", ...games.map(game => game.date)];
     const oldHandicaps = [...games.map(game => game.ega), user.current_ega];
     const newHandicaps = [...games.map(game => game.whc), user.current_whc];
-    console.log(labels);
-    console.log(oldHandicaps);
-    console.log(newHandicaps);
 
-    new Chart(ctx, {
+    if (handicapChartInstance) {
+        handicapChartInstance.data.labels = labels;
+        handicapChartInstance.data.datasets[0].data = oldHandicaps;
+        handicapChartInstance.data.datasets[1].data = newHandicaps;
+        handicapChartInstance.update();
+        return;
+    }
+
+    handicapChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
