@@ -89,28 +89,41 @@ function scoreDifferential(game) {
 }
 
 function calcCourseHdc(game) {
-    return Math.abs(game.whc) * parseFloat(game.slope_rating) / 113 + parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0));
+    return (Math.abs(game.whc) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0)));
 }
 
-function calcStablefordPoints(par, hits) {
+function calcCourseHdcEga(game) {
+    return (Math.abs(game.ega) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0)));
+}
+
+function calcStablefordPoints(par, hits, vorgabe) {
     if (hits <= 0) {
         throw new Error("Hits must be greater than 0");
     } else if(par <= 0) {
         throw new Error("Par must be greater than 0");
     }
-    return Math.max(par - hits + 2, 0);
+    return Math.max((par + vorgabe) - hits + 2, 0);
 }
 
 function calculate_stableford(game){
+    game.holes.sort((a, b) => a.hcp - b.hcp);
+    let courseHandicap = calcCourseHdcEga(game);
+
+    let holeIndex = 0;
+    while (courseHandicap > 0) {
+        // Wenn noch ein Course Handicap übrig ist, erhöhe die Vorgabe für das Loch
+        game.holes[holeIndex].spielVorgabe = (game.holes[holeIndex].spielVorgabe || 0) + 1;  // Vorgabe um 1 erhöhen
+
+        courseHandicap--;
+        holeIndex = (holeIndex + 1) % game.holes.length;
+    }
+    game.holes.sort((a, b) => a.hole_id - b.hole_id);
 
     let stable_points = 0;
 
-    const course_hdc = calcCourseHdc(game); // TODO
-
     for (let i = 0; i < 18; i++) {
-        let parInput = game.holes[i].par;
-        let hitsInput = game.holes[i].hits;
-        stable_points += calcStablefordPoints(parInput, hitsInput);
+        const hole = game.holes[i];
+        stable_points += calcStablefordPoints(hole.par, hole.hits, hole.spielVorgabe);
     }
     return stable_points;
 }
