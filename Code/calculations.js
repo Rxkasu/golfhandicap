@@ -89,11 +89,11 @@ function scoreDifferential(game) {
 }
 
 function calcCourseHdc(game) {
-    return (Math.abs(game.whc) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0)));
+    return Math.floor((Math.abs(game.whc) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0))));
 }
 
 function calcCourseHdcEga(game) {
-    return (Math.abs(game.ega) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0)));
+    return Math.floor((Math.abs(game.ega) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0))));
 }
 
 function calcStablefordPoints(par, hits, vorgabe) {
@@ -108,6 +108,8 @@ function calcStablefordPoints(par, hits, vorgabe) {
 function calculate_stableford(game){
     game.holes.sort((a, b) => a.hcp - b.hcp);
     let courseHandicap = calcCourseHdcEga(game);
+
+    game.holes.forEach(hole => hole.spielVorgabe = 0);
 
     let holeIndex = 0;
     while (courseHandicap > 0) {
