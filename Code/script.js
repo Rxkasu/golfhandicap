@@ -1,14 +1,14 @@
 let current_user_data;
 let logged_in;
-if (!JSON.parse(localStorage.getItem("data"))) addTestUserAndGame();
+//if (!JSON.parse(localStorage.getItem("data"))) addTestUserAndGame();
 
 function addTestUserAndGame(){ //TESTING ONLY call this function to add the Test-Data to your Local-Storage: first game of Testing-Data
     let json_data = JSON.parse(localStorage.getItem("data")) || [];
     let courses = JSON.parse(localStorage.getItem("courses")) || [];
 
-    json_data.push({email: "Tester@123", password: "123", role: "Golfer", current_whc: 54, current_ega: 54, games:
+    json_data.push({email: "Tester@123", password: "123", role: "Golfer", current_whc: 15.2, current_ega: 15.0, games:
             [
-                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 54, ega: 54, course_rating: "70.9", slope_rating: "115", par: 72, holes:
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 20, ega: 20, course_rating: "70.9", slope_rating: "115", par: 72, holes:
                 [
                     {hole_id: 1, par: 3, hcp: 4, hits: 5},
                     {hole_id: 2, par: 4, hcp: 16, hits: 6},
@@ -28,7 +28,17 @@ function addTestUserAndGame(){ //TESTING ONLY call this function to add the Test
                     {hole_id: 16, par: 5, hcp: 12, hits: 6},
                     {hole_id: 17, par: 4, hcp: 9, hits: 5},
                     {hole_id: 18, par: 4, hcp: 15, hits: 6}
-                ]}
+                ]},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 18.2, ega:	18.1},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 17.8, ega: 17.7},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 17.3, ega: 17.1},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 17.5, ega: 17.4},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 17.0, ega: 16.9},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 16.6, ega: 16.5},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 16.2, ega: 16.0},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 16.4, ega: 16.3},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 15.8, ega: 15.7},
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 15.2, ega: 15.0}
             ]})
     courses.push({course_name: "Test-Kurs", course_rating: "70.9", slope_rating: "115",holes:
             [
