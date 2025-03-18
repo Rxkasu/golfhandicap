@@ -28,7 +28,7 @@ function addTestUserAndGame(){ //TESTING ONLY call this function to add the Test
                     {hole_id: 16, par: 5, hcp: 12, hits: 6},
                     {hole_id: 17, par: 4, hcp: 9, hits: 5},
                     {hole_id: 18, par: 4, hcp: 15, hits: 6}
-                ]},
+                ]}/*,
                 {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 18.2, ega:	18.1},
                 {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 17.8, ega: 17.7},
                 {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 17.3, ega: 17.1},
@@ -38,7 +38,7 @@ function addTestUserAndGame(){ //TESTING ONLY call this function to add the Test
                 {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 16.2, ega: 16.0},
                 {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 16.4, ega: 16.3},
                 {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 15.8, ega: 15.7},
-                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 15.2, ega: 15.0}
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 15.2, ega: 15.0}*/
             ]})
     courses.push({course_name: "Test-Kurs", course_rating: "70.9", slope_rating: "115",holes:
             [
@@ -192,8 +192,8 @@ function save_inputs(){
     calculate_par();
     notificationAlert("Spiel erfolgreich gespeichert!");
     const { ega, whc } = calculateHandicaps(current_user_data.email);
-    document.getElementById("old_handicap").innerHTML = ega;
-    document.getElementById("new_handicap").innerHTML = whc;
+    document.getElementById("old_handicap").innerHTML = (-ega).toFixed(1);
+    document.getElementById("new_handicap").innerHTML = whc.toFixed(1);
 }
 
 //calculates total Par of Golf-course
