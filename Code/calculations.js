@@ -105,27 +105,20 @@ function calcStablefordPoints(par, hits, vorgabe) {
     return Math.max((par + vorgabe) - hits + 2, 0);
 }
 
-function calculate_stableford(game){
-    game.holes.sort((a, b) => a.hcp - b.hcp);
-    let courseHandicap = calcCourseHdcEga(game);
-
-    game.holes.forEach(hole => hole.spielVorgabe = 0);
-
-    let holeIndex = 0;
-    while (courseHandicap > 0) {
-        // Wenn noch ein Course Handicap übrig ist, erhöhe die Vorgabe für das Loch
-        game.holes[holeIndex].spielVorgabe = (game.holes[holeIndex].spielVorgabe || 0) + 1;  // Vorgabe um 1 erhöhen
-
-        courseHandicap--;
-        holeIndex = (holeIndex + 1) % game.holes.length;
-    }
-    game.holes.sort((a, b) => a.hole_id - b.hole_id);
+function calculate_stableford(game) {
+    let courseHandicap = Math.round(calcCourseHdcEga(game));
+    let div = Math.floor(courseHandicap / game.holes.length);
+    let mod = courseHandicap % game.holes.length;
 
     let stable_points = 0;
 
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < game.holes.length; i++) {
         const hole = game.holes[i];
-        stable_points += calcStablefordPoints(hole.par, hole.hits, hole.spielVorgabe);
+        if(hole.hcp <= mod) {
+            stable_points += calcStablefordPoints(hole.par, hole.hits, div+1);
+        } else {
+            stable_points += calcStablefordPoints(hole.par, hole.hits, div);
+        }
     }
     return stable_points;
 }
