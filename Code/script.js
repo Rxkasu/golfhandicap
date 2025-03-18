@@ -275,7 +275,7 @@ function load_edit_course_holes(){
 
 function load_gameLeader_holes(game_index){
     const json_data = JSON.parse(localStorage.getItem("data"));
-    document.getElementById("gameLeader_send_mail").disabled;
+    document.getElementById("gameLeader_send_mail").disabled = true;
 
     const email = document.getElementById("gameLeader_user_select").value;
 
