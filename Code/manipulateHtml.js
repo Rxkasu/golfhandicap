@@ -495,7 +495,7 @@ function checkSelections(courseRadios, userRadios, printButton) {
 }
 
 function showEditCourse() {
-    document.getElementById("course_title").innerHTML = "Kurs bearbeiten";
+    document.getElementById("course_title").innerHTML = "Kurs bearbeiten:";
     document.getElementById("course_name").classList.add("hidden");
     document.getElementById("edit_course_select").classList.remove("hidden");
     document.getElementById("course_name_label").classList.add("hidden");
@@ -507,7 +507,7 @@ function showEditCourse() {
 }
 
 function cancelEditCourse() {
-    document.getElementById("course_title").innerHTML = "Kurs bearbeiten";
+    document.getElementById("course_title").innerHTML = "Kurs hinzufügen:";
     document.getElementById("course_name").classList.remove("hidden");
     document.getElementById("edit_course_select").classList.add("hidden");
     document.getElementById("course_name_label").classList.remove("hidden");
