@@ -140,6 +140,7 @@ function clearGameLeaderGameFields() {
     createGameLeaderGameSelect();
     document.getElementById("gameLeader_course_slope").value = "";
     document.getElementById("gameLeader_course_rating").value = "";
+    document.getElementById("gameLeader_send_mail").disabled;
 
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`gLpar${i}`).value = "";
@@ -276,6 +277,7 @@ function createGameLeaderUserSelect() {
 function createGameLeaderGameSelect(user_email) {
     const dropdown = document.getElementById("gameLeader_game_select");
     document.getElementById("gameLeader_game_select_container").classList.remove("hidden");
+    document.getElementById("gameLeader_send_mail").disabled;
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle ein Spiel</option>';
 

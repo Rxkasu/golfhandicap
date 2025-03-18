@@ -7,27 +7,17 @@ function calculateHandicaps(email) {
             break;
         }
     }
-
-    let previousGame;
-    if (games.length === 1) {
-        previousGame = {ega: -54};
-    } else {
-        previousGame = games[games.length-2];
-    }
-
-    const ega = calculate_old_hdc(previousGame, games[games.length-1]);
+    const ega = calculate_old_hdc(games[games.length-1]);
     const whc = calculate_whci(games);
 
     for (let x = 0; x < json_data.length; x++) {
         if (json_data[x].email === email) {
-            json_data[x].games[games.length -1].ega = json_data[x].current_ega;
             json_data[x].current_ega = ega;
-            json_data[x].games[games.length -1].whc = json_data[x].current_whc;
             json_data[x].current_whc = whc;
+            localStorage.setItem("data", JSON.stringify(json_data));
+            break;
         }
     }
-
-    localStorage.setItem("data", JSON.stringify(json_data));
     return { ega, whc };
 }
 
@@ -126,8 +116,8 @@ function calculate_stableford(game){
 }
 
 // Calculates the handicap using stableford points: https://serviceportal.dgv-intranet.de/regularien/vorgabensystem/i539_1.cfm
-function calculate_old_hdc(game, currentGame){
-    let previousHandicap = game.ega;
+function calculate_old_hdc(currentGame){
+    let previousHandicap = currentGame.ega;
 
     let stable_points = calculate_stableford(currentGame);
 

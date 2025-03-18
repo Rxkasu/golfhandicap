@@ -6,9 +6,9 @@ function addTestUserAndGame(){ //TESTING ONLY call this function to add the Test
     let json_data = JSON.parse(localStorage.getItem("data")) || [];
     let courses = JSON.parse(localStorage.getItem("courses")) || [];
 
-    json_data.push({email: "Tester@123", password: "123", role: "Golfer", current_whc: 54, current_ega: -54, games:
+    json_data.push({email: "Tester@123", password: "123", role: "Golfer", current_whc: 54, current_ega: 54, games:
             [
-                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 54, ega: -54, course_rating: "70.9", slope_rating: "115", par: 72, holes:
+                {game_id: "", course_name: "Test-Kurs", date: "17/03/2025", whc: 54, ega: 54, course_rating: "70.9", slope_rating: "115", par: 72, holes:
                 [
                     {hole_id: 1, par: 3, hcp: 4, hits: 5},
                     {hole_id: 2, par: 4, hcp: 16, hits: 6},
@@ -122,7 +122,7 @@ function register(){
     } else {
         if (password !== passwordCheck) return window.alert("Passwort und Wiederholen-Passwort stimmen nicht überein"); // Check if Password is also the Check (Wiederholen)
 
-        const new_user = {"email": email, "role": role, "password": password, current_whc: 54, current_ega: -54, "games": []};
+        const new_user = {"email": email, "role": role, "password": password, current_whc: 54, current_ega: 54, "games": []};
         json_data.push(new_user)                                        // Append new user
         localStorage.setItem("data", JSON.stringify(json_data))         // save JSON with new user
         current_user_data = new_user;
@@ -144,8 +144,10 @@ function save_inputs(){
 
     const savedCourses = JSON.parse(localStorage.getItem("courses"));
     const course = savedCourses.find(obj => obj.course_name === course_name);
+    const json_data = JSON.parse(localStorage.getItem("data"));
+    const user = json_data.find(user => user.email === current_user_data.email);
 
-    const game_data = {"game_id": '',"course_name": course_name, "date": get_date(), "whc": current_user_data.current_whc || 54, "ega": current_user_data.current_ega || -54, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": '',
+    const game_data = {"game_id": '',"course_name": course_name, "date": get_date(), "whc": user.current_whc, "ega": user.current_ega, "course_rating": course.course_rating, "slope_rating": course.slope_rating, "par": '',
             "holes": [
                 {"hole_id": 1, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 2, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 3, "par": 0, "hcp": 0, "hits":0},
                 {"hole_id": 4, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 5, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 6, "par": 0, "hcp": 0, "hits":0},
@@ -154,7 +156,7 @@ function save_inputs(){
                 {"hole_id": 13, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 14, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 15, "par": 0, "hcp": 0, "hits":0},
                 {"hole_id": 16, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 17, "par": 0, "hcp": 0, "hits":0}, {"hole_id": 18, "par": 0, "hcp": 0, "hits":0}
             ]}
-    let json_data = JSON.parse(localStorage.getItem("data"));
+
     for (let i = 1; i <= 18; i++) {
         let par = document.getElementById(`par${i}`).value || null;
         let hcp = document.getElementById(`hcp${i}`).value || null;
@@ -273,6 +275,7 @@ function load_edit_course_holes(){
 
 function load_gameLeader_holes(game_index){
     const json_data = JSON.parse(localStorage.getItem("data"));
+    document.getElementById("gameLeader_send_mail").disabled;
 
     const email = document.getElementById("gameLeader_user_select").value;
 
@@ -299,7 +302,7 @@ function load_gameLeader_holes(game_index){
 
 function save_gameLeader_editedHoles(){
     const email = document.getElementById("gameLeader_user_select").value;
-    const game_index = document.getElementById("gameLeader_game_select").value;
+    const game_index = parseInt(document.getElementById("gameLeader_game_select").value);
     if (!email) return window.alert("Bitte einen Golfer auswählen!");
     if (!game_index && game_index !== 0) return window.alert("Bitte ein Spiel auswählen!");
 
@@ -324,13 +327,27 @@ function save_gameLeader_editedHoles(){
     for (let i = 0; i < json_data.length; i++) {
         if (json_data[i].email === email) {
             json_data[i].games[game_index] = game_data;
+
+            let ega = calculate_old_hdc(json_data[i].games[game_index]);
+            let whc = calculate_whci(json_data[i].games.slice(0, game_index+1));
+
+            for (let j = game_index +1; j < json_data[i].games.length; j++) {
+                console.log(json_data[i].games[j].ega);
+                json_data[i].games[j].ega = ega;
+                json_data[i].games[j].whc = whc;
+
+                json_data[i].games[j].ega = calculate_old_hdc(json_data[i].games[j]);
+                json_data[i].games[j].whc = calculate_whci(json_data[i].games.slice(0, j+1));
+            }
+            json_data[i].current_ega = ega;
+            json_data[i].current_whc = whc;
+
             localStorage.setItem("data", JSON.stringify(json_data));
             break;
         }
     }
     notificationAlert("Spiel erfolgreich bearbeitet!");
-    const { ega, whc } = calculateHandicaps(email); // TODO also every game after this edited game???
-    return { ega, whc, email};
+    document.getElementById("gameLeader_send_mail").disabled = false;
 }
 
 // Delets a single course game
@@ -470,9 +487,12 @@ function saveEditCourse() {
     showPrintScorecardInputs();
 }
 
-function sendMail(user){
+function sendMail(){
+    const userEmail = document.getElementById("gameLeader_user_select").value;
+    const users = JSON.parse(localStorage.getItem("data"));
+    const user = users.find(user => user.email === userEmail);
     let name = user.email.substring(0, user.email.indexOf("@"));
-    let nachricht = "Hallo " + name + ",\n\ndein Golf-Handicap wurde aktualisiert und ist nun:\nEGA: " + user.ega + "\nWHC: " + user.whc + "\n\nMit freundlichen Grüßen dein Golf-HCC Team";
+    let nachricht = "Hallo " + name + ",\n\ndein Golf-Handicap wurde aktualisiert und ist nun:\nEGA: " + user.current_ega + "\nWHC: " + user.current_whc + "\n\nMit freundlichen Grüßen dein Golf-HCC Team";
     let mailtoLink = "mailto:" + user.email
         + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
         + "&body=" + encodeURIComponent(nachricht);

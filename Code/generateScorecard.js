@@ -79,11 +79,7 @@ function printScorecard() {
         }
 
         // Zuerst sortiere die Tabelle nach dem HCP-Wert
-        tableRows.sort((a, b) => {
-            const aHcp = selectedCourseData.holes[a[0] - 1].hcp; // HCP des Lochs a
-            const bHcp = selectedCourseData.holes[b[0] - 1].hcp; // HCP des Lochs b
-            return aHcp - bHcp;
-        });
+        tableRows.sort((a, b) => a[2] - b[2]);
 
         // Durchlaufe die Tabelle und setze die Vorgabe, bis das Course Handicap aufgebraucht ist
         let holeIndex = 0;
