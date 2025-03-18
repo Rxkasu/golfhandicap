@@ -22,6 +22,10 @@ function calculateHandicaps(email) {
 }
 
 function calculate_whci(games) {
+    return Math.min(calculate_whci_uncapped(games), 54);
+}
+
+function calculate_whci_uncapped(games) {
     const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
     games.slice(-20);
