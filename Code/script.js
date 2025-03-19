@@ -392,6 +392,8 @@ function save_course(){
     if (!course.course_name.trim()) return window.alert("Kursname darf nicht leer sein!");
     if (!course.course_rating.trim() && course.course_rating !== 0) return window.alert("Kurs-Rating darf nicht leer sein!");
     if (!course.slope_rating.trim() && course.slope_rating !== 0) return window.alert("Slope-Rating darf nicht leer sein!");
+    if (course.course_rating < 1) return window.alert(`Ungültiges Kurs-Rating gefunden\nKurs-Rating darf nicht unter 1 liegen!`);
+    if (course.slope_rating < 1) return window.alert(`Ungültiges Slope-Rating gefunden\nSlope-Rating darf nicht unter 1 liegen!`);
 
     const holes = [];
     for (let i = 1; i <= 18; i++) {
@@ -399,6 +401,7 @@ function save_course(){
         let par = document.getElementById(`cpar${i}`).value || null;
         if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein!");
         if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein!");
+        if (par < 1) return window.alert(`Ungültiger Par-Wert gefunden: ${par} bei Loch ${i} gefunden\nPar darf nicht unter 1 liegen!`);
 
         holes.push({
             hole_id: i,
@@ -449,6 +452,8 @@ function saveEditCourse() {
     if (!course.course_name.trim()) return window.alert("Kursname darf nicht leer sein!");
     if (!course.course_rating.trim() && course.course_rating !== 0) return window.alert("Kurs-Rating darf nicht leer sein!");
     if (!course.slope_rating.trim() && course.slope_rating !== 0) return window.alert("Slope-Rating darf nicht leer sein!");
+    if (course.course_rating < 1) return window.alert(`Ungültiges Kurs-Rating gefunden\nKurs-Rating darf nicht unter 1 liegen!`);
+    if (course.slope_rating < 1) return window.alert(`Ungültiges Slope-Rating gefunden\nSlope-Rating darf nicht unter 1 liegen!`);
 
     const holes = [];
     for (let i = 1; i <= 18; i++) {
@@ -456,6 +461,7 @@ function saveEditCourse() {
         let par = document.getElementById(`cpar${i}`).value || null;
         if (hcp == null) return window.alert("HCP Eingabefeld " + i + " darf nicht leer sein!");
         if (par == null) return window.alert("Par Eingabefeld " + i + " darf nicht leer sein!");
+        if (par < 1) return window.alert(`Ungültiger Par-Wert gefunden: ${par} bei Loch ${i} gefunden\nPar darf nicht unter 1 liegen!`);
 
         holes.push({
             hole_id: i,

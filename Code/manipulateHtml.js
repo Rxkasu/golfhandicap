@@ -267,15 +267,22 @@ function createGameLeaderUserSelect() {
 
     dropdown.innerHTML = '<option value="" disabled selected hidden>Bitte wähle einen Golfer</option>';
 
-    const data = JSON.parse(localStorage.getItem("data")) || [{email: "Kein Golfer vorhanden", disabled: true}];
+    const data = JSON.parse(localStorage.getItem("data")) || [{email: "Kein Golfer vorhanden", role: "Golfer", disabled: true}];
     const golfers = data.filter(user => user.role === "Golfer");
-    golfers.forEach(user => {
+    if (golfers.length === 0) {
         const option = document.createElement("option");
-        option.value = user.email;
-        option.textContent = user.email;
-        if (user.disabled === true) option.disabled = true;
+        option.textContent = "Kein Golfer vorhanden";
+        option.disabled = true;
         dropdown.appendChild(option);
-    });
+    } else {
+        golfers.forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.email;
+            option.textContent = user.email;
+            if (user.disabled === true) option.disabled = true;
+            dropdown.appendChild(option);
+        });
+    }
     dropdown.onchange = (event) => createGameLeaderGameSelect(event.target.value);
 }
 
