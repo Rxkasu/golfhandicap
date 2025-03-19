@@ -147,10 +147,7 @@ function calculate_old_hdc(currentGame){
     let stable_points = calculate_stableford(currentGame);
 
     if (previousHandicap <= 4.4){                                                               // Checks the current handicap-class
-        if (stable_points === 35 || stable_points === 36){                                                      // Handicap stays the same
-            return previousHandicap;
-        }
-        else if (stable_points > 36){                                                   // Handicap gets reduced (player performed better than usual)
+        if (stable_points > 36){                                                   // Handicap gets reduced (player performed better than usual)
             while (stable_points > 36){
                 stable_points = stable_points - 1;
                 previousHandicap = previousHandicap - 0.1;
@@ -164,6 +161,7 @@ function calculate_old_hdc(currentGame){
             }
             return previousHandicap;
         }
+        return previousHandicap;
     }
     else if (previousHandicap > 4.4 && previousHandicap <= 11.4){                                       // Handicap class 2
         if (stable_points >= 34 && stable_points <= 36){

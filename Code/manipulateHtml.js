@@ -115,8 +115,8 @@ function generateGameInputFields(container, fieldNames) {
 function clearGameFields() {
     createCourseSelect();
     //document.getElementById("currentHci").value = "";
-    document.getElementById("old_handicap").value = "N/A";
-    document.getElementById("new_handicap").value = "N/A";
+    document.getElementById("old_handicap").innerHTML = "N/A";
+    document.getElementById("new_handicap").innerHTML = "N/A";
     document.getElementById("game_course_rating").value = "";
     document.getElementById("game_course_slope").value = "";
 
