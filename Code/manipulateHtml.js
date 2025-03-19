@@ -115,6 +115,8 @@ function generateGameInputFields(container, fieldNames) {
 function clearGameFields() {
     createCourseSelect();
     //document.getElementById("currentHci").value = "";
+    document.getElementById("old_handicap").value = "N/A";
+    document.getElementById("new_handicap").value = "N/A";
 
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`par${i}`).value = "";

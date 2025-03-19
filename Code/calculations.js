@@ -93,11 +93,11 @@ function scoreDifferential(game) {
 }
 
 function calcCourseHdc(game) {
-    return Math.floor((Math.abs(game.whc) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0))));
+    return Math.floor((game.whc * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0))));
 }
 
 function calcCourseHdcEga(game) {
-    return Math.floor((Math.abs(game.ega) * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0))));
+    return Math.floor((game.ega * (parseFloat(game.slope_rating) / 113)) + (parseFloat(game.course_rating) - (game.holes.reduce((acc, hole) => acc + hole.par, 0))));
 }
 
 function calcStablefordPoints(par, hits, vorgabe) {
@@ -116,12 +116,25 @@ function calculate_stableford(game) {
 
     let stable_points = 0;
 
-    for (let i = 0; i < game.holes.length; i++) {
-        const hole = game.holes[i];
-        if(hole.hcp <= mod) {
-            stable_points += calcStablefordPoints(hole.par, hole.hits, div+1);
-        } else {
-            stable_points += calcStablefordPoints(hole.par, hole.hits, div);
+    if (div > 0) {
+        for (let i = 0; i < game.holes.length; i++) {
+            const hole = game.holes[i];
+
+            if(hole.hcp <= mod) {
+                stable_points += calcStablefordPoints(hole.par, hole.hits, div+1);
+            } else {
+                stable_points += calcStablefordPoints(hole.par, hole.hits, div);
+            }
+        }
+    } else {
+        for (let i = 0; i < game.holes.length; i++) {
+            const hole = game.holes[i];
+
+            if(hole.hcp <= 18 - mod) {
+                stable_points += calcStablefordPoints(hole.par, hole.hits, div);
+            } else {
+                stable_points += calcStablefordPoints(hole.par, hole.hits, div-1);
+            }
         }
     }
     return stable_points;
