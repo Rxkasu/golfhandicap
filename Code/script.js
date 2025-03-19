@@ -502,7 +502,7 @@ function sendMail(){
     const users = JSON.parse(localStorage.getItem("data"));
     const user = users.find(user => user.email === userEmail);
     let name = user.email.substring(0, user.email.indexOf("@"));
-    let nachricht = "Hallo " + name + ",\n\ndein Golf-Handicap wurde aktualisiert und ist nun:\nEGA: " + user.current_ega + "\nWHC: " + user.current_whc + "\n\nMit freundlichen Grüßen dein Golf-HCC Team";
+    let nachricht = "Hallo " + name + ",\n\ndein Golf-Handicap wurde aktualisiert und ist nun:\nEGA: " + (-user.current_ega).toFixed(1) + "\nWHC: " + user.current_whc.toFixed(1) + "\n\nMit freundlichen Grüßen dein Golf-HCC Team";
     let mailtoLink = "mailto:" + user.email
         + "?subject=" + encodeURIComponent("Golf-Handicap aktualisiert - Golf-HCC")
         + "&body=" + encodeURIComponent(nachricht);
