@@ -139,6 +139,10 @@ function register(){
         logged_in = true;
         notificationAlert("Registrierung erfolgreich! Jetzt kannst du dich einloggen.");
         switchAuthTabs("login");
+        document.getElementById("loginPass").value = "";
+        document.getElementById("regisPass").value = "";
+        document.getElementById("regisPassCheck").value = "";
+        document.getElementById("regisEmail").value = "";
         document.getElementById("loginEmail").value = email;
         showPrintScorecardInputs();
         createGameLeaderUserSelect();

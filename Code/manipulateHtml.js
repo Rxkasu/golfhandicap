@@ -117,6 +117,8 @@ function clearGameFields() {
     //document.getElementById("currentHci").value = "";
     document.getElementById("old_handicap").value = "N/A";
     document.getElementById("new_handicap").value = "N/A";
+    document.getElementById("game_course_rating").value = "";
+    document.getElementById("game_course_slope").value = "";
 
     for (let i = 1; i <= 18; i++) {
         document.getElementById(`par${i}`).value = "";
@@ -509,6 +511,7 @@ function showEditCourse() {
     document.getElementById("cancel_edit_course").classList.remove("hidden");
     document.getElementById("save_course").classList.add("hidden");
     document.getElementById("save_edit_course").classList.remove("hidden");
+    clearCourseFields();
 }
 
 function cancelEditCourse() {
